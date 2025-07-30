@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from disnake.ext import commands
 from disnake.ui import Button, Select, View
 from disnake import TextInputStyle
-from database.database import add_user, get_user_info
+from database.database import add_user, get_user_info, edit_user_info
 
 intents = disnake.Intents.default()
 intents.message_content = True
@@ -32,7 +32,7 @@ class RegistrationUser(commands.Cog):
         # ------------------------------------------------------------
         user_data = await get_user_info(inter.author.id)
         if user_data is not None:
-            await inter.response.send_message("Ви вже зареєстровані")
+            await inter.response.send_message("Ви вже зареєстровані", ephemeral=True)
             return
         # ------------------------------------------------------------
         await inter.response.send_modal(RegistrationWindow())

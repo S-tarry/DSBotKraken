@@ -5,8 +5,6 @@ DB_NAME = 'database.db'
 
 async def init_db():
     async with aiosqlite.connect(DB_NAME) as db:
-        # db.row_factory = aiosqlite.Row
-        # table - users
         await db.execute(
         """
             CREATE TABLE IF NOT EXISTS users (
@@ -70,3 +68,13 @@ async def get_user_info(user_id):
         )
         row = await c.fetchone()
         return row
+
+
+# редагування інформації про користувача
+async def edit_user_info(username, role, bank_card, user_id):
+    async with aiosqlite.connect(DB_NAME) as db:
+        await db.execute(
+            'UPDATE users SET username = ?, role = ?, bank_card = ? WHERE user_id = ?',
+            (username, role, bank_card, user_id)
+        )
+        await db.commit()

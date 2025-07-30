@@ -22,39 +22,39 @@ class Main(commands.Cog):
     # async def on_message(self, message):
     #     if message.author == client.user:
     #         return 
-    @commands.slash_command(description="вибір ролі")
-    async def roles(self, inter: disnake.ApplicationCommandInteraction):
-        await inter.send("Виберіть роль: ", view=DropdownRoleView())
+    # @commands.slash_command(description="вибір ролі")
+    # async def roles(self, inter: disnake.ApplicationCommandInteraction):
+    #     await inter.send("Виберіть роль: ", view=DropdownRoleView())
     # @commands.command()
     # async def roles(self, inter: disnake.ApplicationCommandInteraction):
         # await inter.send("Виберіть роль: ", view=DropdownRoleView())
 
 
-class DropdownRoleMenu(disnake.ui.StringSelect):
-    def __init__(self):
-        options = [
-            disnake.SelectOption(label="програміст", description="написання коду", emoji="👨🏽‍💻"),
-            disnake.SelectOption(label="програміст1", description="написання коду", emoji="👨🏽‍💻"),
-            disnake.SelectOption(label="програміст2", description="написання коду", emoji="👨🏽‍💻"),
-            disnake.SelectOption(label="програміст3", description="написання коду", emoji="👨🏽‍💻"),
-            disnake.SelectOption(label="програміст4", description="написання коду", emoji="👨🏽‍💻"),
-        ]
+# class DropdownRoleMenu(disnake.ui.StringSelect):
+#     def __init__(self):
+#         options = [
+#             disnake.SelectOption(label="програміст", description="написання коду", emoji="👨🏽‍💻"),
+#             disnake.SelectOption(label="програміст1", description="написання коду", emoji="👨🏽‍💻"),
+#             disnake.SelectOption(label="програміст2", description="написання коду", emoji="👨🏽‍💻"),
+#             disnake.SelectOption(label="програміст3", description="написання коду", emoji="👨🏽‍💻"),
+#             disnake.SelectOption(label="програміст4", description="написання коду", emoji="👨🏽‍💻"),
+#         ]
 
-        super().__init__(
-            placeholder="Вибери роль/ролі",
-            min_values=1,
-            max_values=3,
-            options=options,
-        )
+#         super().__init__(
+#             placeholder="Вибери роль/ролі",
+#             min_values=1,
+#             max_values=3,
+#             options=options,
+#         )
 
-    async def callback(self, inter: disnake.MessageInteraction):
-        await inter.response.send_message(f"Ваші ролі: {self.values}")
+#     async def callback(self, inter: disnake.MessageInteraction):
+#         await inter.response.send_message(f"Ваші ролі: {self.values}")
     
     
-class DropdownRoleView(disnake.ui.View):
-    def __init__(self):
-        super().__init__()
-        self.add_item(DropdownRoleMenu())
+# class DropdownRoleView(disnake.ui.View):
+#     def __init__(self):
+#         super().__init__()
+#         self.add_item(DropdownRoleMenu())
     # @commands.Cog.listener()
     # async def on_member_join(self, member: disnake.Member):
     #     role = await disnake.utils.get(guild_id=member.guild.id,
