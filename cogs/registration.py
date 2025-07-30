@@ -37,36 +37,137 @@ class RegistrationUser(commands.Cog):
         # ------------------------------------------------------------
         await inter.response.send_modal(RegistrationWindow())
 
+    # команда editinfo
+    @commands.slash_command(name="editinfo", description="редагування даних")
+    async def editinfo(self, inter: disnake.ApplicationCommandInteraction):
+        user_data = await get_user_info(inter.author.id)
+        if user_data is None:
+            await inter.response.send_message("Ви не зареєстровані! Спочатку зареєструйтесь ", ephemeral=True)
+            return
+        else: 
+        # modal = RegistrationWindow(is_edit=True, current_data=user_data)
+        # await inter.response.send_message(modal)
+            await inter.response.send_modal(RegistrationWindow(is_edit=True, current_data=user_data))
+        
+
 
 # вікно реєстрації
 class RegistrationWindow(disnake.ui.Modal):
-    def __init__(self):
-        components = [
-            disnake.ui.TextInput(
-                label="Ім'я",
-                placeholder="Введіть своє ім'я",
-                custom_id="username",
-                style=TextInputStyle.short,
-                min_length=2,
-                max_length=50,
-                required=True,
-            ),
-            disnake.ui.TextInput(
-                label="Карта",
-                placeholder="Введіть номер банківської картки",
-                custom_id="bank_card",
-                style=TextInputStyle.short,                
-                min_length=16,
-                max_length=20,
-                required=True,
-            ),
-        ]
-        super().__init__(title="Реєстрація", components=components)
+    def __init__(self, is_edit=False, current_data=None):
+        self.is_edit = is_edit
+        self.current_data = current_data
+        if is_edit:
+            components = [
+                disnake.ui.TextInput(
+                    label="Ім'я",
+                    placeholder="Введіть своє ім'я",
+                    custom_id="username",
+                    style=TextInputStyle.short,
+                    min_length=2,
+                    max_length=50,
+                    required=False,
+                ),
+                disnake.ui.TextInput(
+                    label="Карта",
+                    placeholder="Введіть номер банківської картки",
+                    custom_id="bank_card",
+                    style=TextInputStyle.short,                
+                    min_length=16,
+                    max_length=20,
+                    required=False,
+                ),
+                disnake.ui.TextInput(
+                    label="Роль",
+                    placeholder="Вкажіть роль/ролі через кому ",
+                    custom_id="role",
+                    style=TextInputStyle.short,                
+                    min_length=3,
+                    required=False,
+                ),
+            ]
+            title = "Редагування інформації"
+        else:    
+            components = [
+                disnake.ui.TextInput(
+                    label="Ім'я",
+                    placeholder="Введіть своє ім'я",
+                    custom_id="username",
+                    style=TextInputStyle.short,
+                    min_length=2,
+                    max_length=50,
+                    required=False,
+                ),
+                disnake.ui.TextInput(
+                    label="Карта",
+                    placeholder="Введіть номер банківської картки",
+                    custom_id="bank_card",
+                    style=TextInputStyle.short,                
+                    min_length=16,
+                    max_length=20,
+                    required=False,
+                ),
+            ]
+            title = "Реєстрація"
+        super().__init__(title=title, components=components)
+
 
     async def callback(self, inter: disnake.ModalInteraction):
+        if self.is_edit:
+            await self.handle_edit(inter)
+        else:
+            await self.handle_regist(inter)
+    
+
+    # ресєтрація користувача
+    async def handle_regist(self, inter: disnake.ModalInteraction):
         username = inter.text_values["username"].strip()
         bank_card = inter.text_values["bank_card"].strip()
         await inter.response.send_message("Виберіть роль: ", view=DropdownRoleView(username, bank_card, inter.author.id), ephemeral=True)
+
+
+    # редагування даних користувача
+    async def handle_edit(self, inter: disnake.ModalInteraction):
+        user_data = await get_user_info(inter.author.id)
+        if not user_data:
+            await inter.response.send_message("Ви не зареєстровані", ephemeral=True)
+            return
+    
+        current_username = user_data[1]
+        current_role = user_data[2]
+        current_card = user_data[3]
+
+        new_username = inter.text_values["username"].strip() if inter.text_values["username"].strip() else current_username
+        new_role = inter.text_values["role"].strip() if inter.text_values["role"].strip() else current_role
+        new_bank_card = inter.text_values["bank_card"].strip()if inter.text_values["bank_card"].strip() else current_card
+
+        await edit_user_info(new_username, new_role, new_bank_card, inter.author.id)
+
+        if new_role != current_role:
+            await self.update_server_roles(inter, new_role.split(", "))
+        
+        await inter.response.send_message("Дані були успішно оновленні", ephemeral=True)
+    
+
+    # оновлення ролі на сервері
+    async def update_server_roles(self, inter: disnake.ModalInteraction, new_roles):
+        member = inter.author
+        roles_to_remove = []
+        for role in member.roles:
+            if role.id in ROLES.values():
+                roles_to_remove.append(role)
+        if roles_to_remove:
+            await member.remove_roles(*roles_to_remove)
+        
+        roles_to_add = []
+        for role_name in new_roles:
+            role_id = ROLES.get(role_name.strip().lower())
+            if role_id:
+                role = member.guild.get_role(role_id)
+                if role:
+                    roles_to_add.append(role)
+        if roles_to_add:
+            await member.add_roles(*roles_to_add)
+
 
 
 # випадаючий список з ролями
@@ -105,6 +206,7 @@ class DropdownRoleMenu(Select):
         await inter.followup.send(embed=embed, view=view, ephemeral=True)
 
 
+
 # перегляд списку з ролями    
 class DropdownRoleView(View):
     def __init__(self, username: str, bank_card: int, user_id: int):
@@ -112,7 +214,8 @@ class DropdownRoleView(View):
         self.add_item(DropdownRoleMenu(username, bank_card, user_id))
     
 
-# надає ролі користувачу --тимчасово--
+
+# надає ролі користувачу --тимчасово, можливе переписання функці--
 class AssignRoles():
     def __init__(self, member: disnake.Member, roles: list):
         self.member = member
@@ -129,6 +232,7 @@ class AssignRoles():
         if roles_to_add:
             await self.member.add_roles(*roles_to_add)
             print("Roles add: ", roles_to_add)
+
 
 
 # кнопки підтвердження та відхилення 
