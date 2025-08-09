@@ -24,32 +24,7 @@ ROLES = {
 class RegistrationUser(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-    
-    # команда - regist
-    @commands.slash_command(name="regist", description="Почати реєстрацію")
-    async def registration(self, inter: disnake.ApplicationCommandInteraction):
-        # тимчасове поки не з'явитьсяя перевірка на доступ до команд
-        # ------------------------------------------------------------
-        user_data = await get_user_info(inter.author.id)
-        if user_data is not None:
-            await inter.response.send_message("Ви вже зареєстровані", ephemeral=True)
-            return
-        # ------------------------------------------------------------
-        await inter.response.send_modal(RegistrationWindow())
-
-    # команда editinfo
-    @commands.slash_command(name="editinfo", description="редагування даних")
-    async def editinfo(self, inter: disnake.ApplicationCommandInteraction):
-        user_data = await get_user_info(inter.author.id)
-        if user_data is None:
-            await inter.response.send_message("Ви не зареєстровані! Спочатку зареєструйтесь ", ephemeral=True)
-            return
-        else: 
-        # modal = RegistrationWindow(is_edit=True, current_data=user_data)
-        # await inter.response.send_message(modal)
-            await inter.response.send_modal(RegistrationWindow(is_edit=True, current_data=user_data))
-        
-
+ 
 
 # вікно реєстрації
 class RegistrationWindow(disnake.ui.Modal):
@@ -117,13 +92,11 @@ class RegistrationWindow(disnake.ui.Modal):
         else:
             await self.handle_regist(inter)
     
-
     # ресєтрація користувача
     async def handle_regist(self, inter: disnake.ModalInteraction):
         username = inter.text_values["username"].strip()
         bank_card = inter.text_values["bank_card"].strip()
         await inter.response.send_message("Виберіть роль: ", view=DropdownRoleView(username, bank_card, inter.author.id), ephemeral=True)
-
 
     # редагування даних користувача
     async def handle_edit(self, inter: disnake.ModalInteraction):
@@ -147,7 +120,6 @@ class RegistrationWindow(disnake.ui.Modal):
         
         await inter.response.send_message("Дані були успішно оновленні", ephemeral=True)
     
-
     # оновлення ролі на сервері
     async def update_server_roles(self, inter: disnake.ModalInteraction, new_roles):
         member = inter.author
@@ -167,7 +139,6 @@ class RegistrationWindow(disnake.ui.Modal):
                     roles_to_add.append(role)
         if roles_to_add:
             await member.add_roles(*roles_to_add)
-
 
 
 # випадаючий список з ролями
@@ -191,6 +162,7 @@ class DropdownRoleMenu(Select):
             max_values=3,
             options=options,
         )
+
 
     async def callback(self, inter: disnake.MessageInteraction):
         await inter.response.defer()
@@ -220,6 +192,7 @@ class AssignRoles():
     def __init__(self, member: disnake.Member, roles: list):
         self.member = member
         self.roles = roles
+
 
     async def assign_roles(self):
         roles_to_add = []

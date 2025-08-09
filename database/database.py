@@ -13,12 +13,10 @@ async def init_db():
                 username TEXT,
                 role TEXT,
                 bank_card INTEGER,
-                current_task_id INTEGER,
                 level INTEGER,
                 rank TEXT,
                 balance INTEGER,
-                task_compl INTEGER,
-                FOREIGN KEY (current_task_id) REFERENCES tasks (id) ON DELETE CASCADE
+                task_compl INTEGER
             )
         """)
 
@@ -27,25 +25,30 @@ async def init_db():
         """
             CREATE TABLE IF NOT EXISTS tasks (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                subtasks_id INTEGER NOT NULL,
+                title TEXT,
                 description TEXT,
+                status TEXT,
+                priority TEXT,
+                role TEXT,
                 total_price INTEGER,
-                points INTEGER,
                 total_xp INTEGER,
-                FOREIGN KEY (subtasks_id) REFERENCES subtasks (id) ON DELETE CASCADE
+                result_url TEXT
             )
         """)
 
-        # table - subtasks
         await db.execute(
         """
-            CREATE TABLE IF NOT EXISTS subtasks (
+            CREATE TABLE IF NOT EXISTS user_tasks (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                description TEXT,
-                price INTEGER,
-                xp INTEGER
+                user_id INTEGER NOT NULL,
+                task_id INTEGER NOT NULL,
+                status TEXT,
+                result_url TEXT,
+                FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE,
+                FOREIGN KEY (task_id) REFERENCES tasks (id) ON DELETE CASCADE
             )
         """)
+
         await db.commit()
 
 
@@ -58,7 +61,6 @@ async def add_user(user_id, username, role, bank_card):
         )
         await db.commit()
 
-
 # перегляд інформації про користувача
 async def get_user_info(user_id):
     async with aiosqlite.connect(DB_NAME) as db:
@@ -69,7 +71,6 @@ async def get_user_info(user_id):
         row = await c.fetchone()
         return row
 
-
 # редагування інформації про користувача
 async def edit_user_info(username, role, bank_card, user_id):
     async with aiosqlite.connect(DB_NAME) as db:
@@ -78,3 +79,57 @@ async def edit_user_info(username, role, bank_card, user_id):
             (username, role, bank_card, user_id)
         )
         await db.commit()
+
+# додавання завдання в бд
+async def add_tasks(title, description, status, priority, role, total_price, total_xp):
+    async with aiosqlite.connect(DB_NAME) as db:
+        await db.execute(
+            'INSERT INTO tasks (title, description, status, priority, role, total_price, total_xp) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            (title, description, status, priority, role, total_price, total_xp)
+        )
+        await db.commit()
+
+# отримання всіх завдань з бд
+async def get_all_tasks():
+    async with aiosqlite.connect(DB_NAME) as db:
+        c = await db.execute(
+            'SELECT id, title, description, status, priority, role, total_price, total_xp FROM tasks'
+        )
+        row = await c.fetchall()
+        return row
+
+# оновлення всіх завдань в таблиці
+async def update_all_tasks(title, description, priority, total_price, total_xp, task_id):
+    async with aiosqlite.connect(DB_NAME) as db:
+        await db.execute(
+            'UPDATE tasks SET title = ?, description = ?, priority = ?, total_price = ?, total_xp = ? WHERE id = ?',
+            (title, description, priority, total_price, total_xp, task_id)
+        )
+        await db.commit()
+
+# оновлення рядка status в БД
+async def update_status(task_id, task_status):
+    async with aiosqlite.connect(DB_NAME) as db:
+        await db.execute(
+            'UPDATE tasks SET status = ? WHERE id = ?', (task_status, task_id)
+        )
+        await db.commit()
+
+# запис завдань які взяв користувач
+async def user_tasks(user_id, task_id, status, result_url):
+    async with aiosqlite.connect(DB_NAME) as db:
+        await db.execute(
+            'INSERT INTO user_tasks (user_id, task_id, status, result_url) VALUES (?, ?, ?, ?)',
+            (user_id, task_id, status, result_url)
+        )
+        await db.commit()
+
+# отримання всіх завдань від користувача які він взяв
+async def user_get_tasks(user_id):
+    async with aiosqlite.connect(DB_NAME) as db:
+        c = await db.execute(
+            'SELECT tasks.id, tasks.title, tasks.description, tasks.status, tasks.role, tasks.total_price, tasks.total_xp, user_tasks.status FROM user_tasks JOIN tasks ON user_tasks.task_id = tasks.id WHERE user_tasks.user_id = ?', 
+            (user_id,)
+        )
+        row = await c.fetchall()
+        return row
