@@ -51,36 +51,33 @@ class GetTasks(commands.Cog):
             counter += 1
         await inter.response.send_message(f"Завдання додано \n Всього: {counter}")
 
-    @commands.slash_command(name="send_tasks", description="send tasks all groups")
+    @commands.slash_command(name="send_tasks", description="надсилає завдання у всі групи")
     async def send_task(self, inter: disnake.ApplicationCommandInteraction):
         await inter.response.send_message("Розсилка завдань")
         tasks_data = await get_all_tasks()
 
         for task in tasks_data:
-            task_id = task[0]
-            title = task[1]
-            description = task[2]
-            status = task[3]
-            priority = task[4]
-            role = task[5]
-            total_price = task[6]
-            total_xp = task[7]
-                
+            task_id, title, description, status, priority, role, total_price, total_xp = task
 
+            if status not in ("Нове", "Оновлене", ""):
+                continue
+                
             channel_id = CHANNEL.get(role)
             if not channel_id:
                 print(f"Немає каналу - {role}")
                 continue
+            
             channel = self.bot.get_channel(channel_id)
-            # if not channel:
-            #     print(f"Немає каналу{channel}")
-            #     continue
+            if not channel:
+                print(f"Невказано id для каналу в коді - {role}")
+                continue
             
             priority_colors = {
                 "Low": disnake.Color.blue(),
                 "Medium": disnake.Color.orange(), 
                 "High": disnake.Color.red()
             }
+
             embed = disnake.Embed(
                 title=f"{title}",
                 description=f"{description}",
@@ -90,16 +87,14 @@ class GetTasks(commands.Cog):
             embed.add_field(name="Ціна", value=total_price, inline=True)
             embed.add_field(name="Досвід", value=total_xp, inline=True)
 
-            if status not in ("Нове", "Оновлене", ""):
-                continue
-            else:
-                await channel.send(embed=embed, view=TaskButtons(task_id, title, self))
-                await update_all_tasks(title, description, priority, total_price, total_xp, task_id)
-                print("Update tasks")
-
             await channel.send(embed=embed, view=TaskButtons(task_id, title, self))
+            await update_all_tasks(title, description, priority, total_price, total_xp, task_id)
             await update_status(task_id, "Не розпочато")
             await self.update_task_status_in_excel(title, "Не розпочато")
+
+            print("Надіслано та оновлено")
+
+            # await channel.send(embed=embed, view=TaskButtons(task_id, title, self))
         await inter.followup.send("Завдання надіслані успішно")
 
 
