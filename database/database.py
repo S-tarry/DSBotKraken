@@ -9,14 +9,15 @@ async def init_db():
         """
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_id INTEGER NOT NULL,
+                user_id INTEGER NOT NULL UNIQUE,
                 username TEXT,
                 role TEXT,
-                bank_card INTEGER,
-                level INTEGER,
+                bank_card TEXT,
+                xp INTEGER DEFAULT 0,
+                level INTEGER DEFAULT 0,
                 rank TEXT,
-                balance INTEGER,
-                task_compl INTEGER
+                balance INTEGER DEFAULT 0,
+                task_compl INTEGER DEFAULT 0
             )
         """)
 
@@ -30,8 +31,8 @@ async def init_db():
                 status TEXT,
                 priority TEXT,
                 role TEXT,
-                total_price INTEGER,
-                total_xp INTEGER,
+                total_price INTEGER DEFAULT 0,
+                total_xp INTEGER DEFAULT 0,
                 result_url TEXT
             )
         """)
@@ -40,8 +41,8 @@ async def init_db():
         """
             CREATE TABLE IF NOT EXISTS user_tasks (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_id INTEGER NOT NULL,
-                task_id INTEGER NOT NULL,
+                user_id INTEGER NOT NULL UNIQUE,
+                task_id INTEGER NOT NULL UNIQUE,
                 status TEXT,
                 result_url TEXT,
                 FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE,
@@ -65,7 +66,7 @@ async def add_user(user_id, username, role, bank_card):
 async def get_user_info(user_id):
     async with aiosqlite.connect(DB_NAME) as db:
         c = await db.execute(
-            'SELECT user_id, username, role, bank_card, current_task_id, level, rank, balance, task_compl FROM users WHERE user_id = ?', 
+            'SELECT user_id, username, role, bank_card, xp, level, rank, balance, task_compl FROM users WHERE user_id = ?', 
             (user_id,)
         )
         row = await c.fetchone()
@@ -79,6 +80,16 @@ async def edit_user_info(username, role, bank_card, user_id):
             (username, role, bank_card, user_id)
         )
         await db.commit()
+
+# оновлення xp та балансу користувача
+async def update_user_info_xp_balance(user_id, balance, xp):
+    async with aiosqlite.connect(DB_NAME) as db:
+        await db.execute(
+            'UPDATE users SET xp = ?, balance = ? WHERE user_id = ?',
+            (xp, balance, user_id) 
+        )
+        await db.commit()
+
 
 # додавання завдання в бд
 async def add_tasks(title, description, status, priority, role, total_price, total_xp):
@@ -98,7 +109,16 @@ async def get_all_tasks():
         row = await c.fetchall()
         return row
 
-# оновлення всіх завдань в таблиці
+# отримання total_price, total_xp з бд
+async def get_price_xp_tasks(task_id):
+    async with aiosqlite.connect(DB_NAME) as db:
+        c = await db.execute(
+            'SELECT total_price, total_xp FROM tasks WHERE id = ?', (task_id,)
+        )
+        row = await c.fetchone()
+        return row
+
+# оновлення всіх завдань в бд
 async def update_all_tasks(title, description, priority, total_price, total_xp, task_id):
     async with aiosqlite.connect(DB_NAME) as db:
         await db.execute(
@@ -107,13 +127,14 @@ async def update_all_tasks(title, description, priority, total_price, total_xp, 
         )
         await db.commit()
 
-# оновлення рядка status в БД
-async def update_status(task_id, task_status):
+# оновлення рядка status та result_url в БД
+async def update_status_url(task_id, task_status, result_url):
     async with aiosqlite.connect(DB_NAME) as db:
         await db.execute(
-            'UPDATE tasks SET status = ? WHERE id = ?', (task_status, task_id)
+            'UPDATE tasks SET status = ?, result_url = ? WHERE id = ?', (task_status, result_url, task_id)
         )
         await db.commit()
+
 
 # запис завдань які взяв користувач
 async def user_tasks(user_id, task_id, status, result_url):
@@ -128,7 +149,7 @@ async def user_tasks(user_id, task_id, status, result_url):
 async def user_get_tasks(user_id):
     async with aiosqlite.connect(DB_NAME) as db:
         c = await db.execute(
-            'SELECT tasks.id, tasks.title, tasks.description, tasks.status, tasks.role, tasks.total_price, tasks.total_xp, user_tasks.status FROM user_tasks JOIN tasks ON user_tasks.task_id = tasks.id WHERE user_tasks.user_id = ?', 
+            'SELECT tasks.id, tasks.title, tasks.description, tasks.status, tasks.priority, tasks.role, tasks.total_price, tasks.total_xp, user_tasks.status FROM user_tasks JOIN tasks ON user_tasks.task_id = tasks.id WHERE user_tasks.user_id = ?', 
             (user_id,)
         )
         row = await c.fetchall()
