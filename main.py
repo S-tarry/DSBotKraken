@@ -4,16 +4,17 @@ import disnake
 from dotenv import load_dotenv
 from disnake.ext import commands
 from database.database import init_db
-
+from database.models import async_main
+from cogs.config import BOT_TOKEN
 
 load_dotenv()
-BOT_TOKEN = os.getenv('TOKEN')
 bot = commands.Bot(command_prefix='.', help_command=None,
                    intents=disnake.Intents.all())
 
 
 @bot.event
 async def on_ready():
+    await async_main()
     await init_db()
     print("БД створена")
 
