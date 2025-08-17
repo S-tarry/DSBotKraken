@@ -9,7 +9,7 @@ async def init_db():
         """
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_id INTEGER NOT NULL UNIQUE,
+                user_id INTEGER NOT NULL,
                 username TEXT,
                 role TEXT,
                 bank_card TEXT,
@@ -41,8 +41,8 @@ async def init_db():
         """
             CREATE TABLE IF NOT EXISTS user_tasks (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_id INTEGER NOT NULL UNIQUE,
-                task_id INTEGER NOT NULL UNIQUE,
+                user_id INTEGER NOT NULL,
+                task_id INTEGER NOT NULL,
                 status TEXT,
                 result_url TEXT,
                 FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE,

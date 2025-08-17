@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 
 from database.database import add_tasks, get_all_tasks, user_tasks, update_status_url, update_all_tasks
 # from disnake import TextInputStyle
-from cogs.const import SHEETS_ID, ADMIN_ID, CHANNEL
+from cogs.config import SHEETS_ID, ADMIN_ID, CHANNEL
 
 
 
@@ -61,21 +61,24 @@ class GetTasks(commands.Cog):
             counter += 1
         await inter.response.send_message(f"Завдання додано. \n Всього: {counter}")
 
+
     @commands.slash_command(name="sendtasks", description="надсилає завдання у всі групи", default_member_permissions=Permissions(manage_guild=True))
     @commands.has_role(ADMIN_ID)
     async def send_task(self, inter: disnake.ApplicationCommandInteraction):
         await inter.response.send_message("Розсилка завдань")
         tasks_data = await get_all_tasks()
+        print(tasks_data)
 
         for task in tasks_data:
             task_id, title, description, status, priority, role, total_price, total_xp = task
 
             if status not in ("Нове", "Оновлене", ""):
                 continue
-                
+            
+            role = role.lower()
             channel_id = CHANNEL.get(role)
             if not channel_id:
-                print(f"Немає каналу - {role}")
+                print(f"{channel_id} Немає каналу - {role}")
                 continue
             
             channel = self.bot.get_channel(channel_id)
@@ -120,10 +123,11 @@ class TaskButtons(disnake.ui.View):
 
     @disnake.ui.button(label="Прийняти", style=disnake.ButtonStyle.green, custom_id="confirm")
     async def confirm(self, button: disnake.ui.Button, inter: disnake.MessageInteraction):
+        await inter.response.defer()
         await user_tasks(inter.author.id, self.task_id, "Виконується", None)
         # await update_status(self.task_id, "Виконується")
         await self.cog.update_task_status_in_excel(self.task_title, "Виконується", None)
-        await inter.response.send_message(f"Ви взяли завдання - {self.task_title}")
+        await inter.followup.send(f"Ви взяли завдання - {self.task_title}")
         await inter.message.delete()
 
 

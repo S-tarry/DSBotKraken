@@ -35,12 +35,13 @@ class ConfirmBtn(disnake.ui.View):
             view = AssignRoles(inter.author, self.roles)
             await view.assign_roles()
             await inter.response.send_message("Ви зареєстровані", ephemeral=True)
-        except Exception as e:
+        except Exception:
             await inter.response.send_message("Помилка при реєстрації", ephemeral=True)
+
 
     @disnake.ui.button(label="Ні", style=disnake.ButtonStyle.grey, emoji="❌")
     async def cancel(self, button: Button, inter: disnake.MessageInteraction):
-        await inter.response.send_message("Реєстрація скаксована", ephemeral=True) 
+        await inter.response.send_message("Реєстрація скасована", ephemeral=True) 
 
 
 
