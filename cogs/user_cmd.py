@@ -2,8 +2,8 @@ import disnake
 
 from disnake.ext import commands
 from disnake import TextInputStyle
-from database.database import get_user_info, user_get_tasks, update_status_url
-# from cogs.registration import RegistrationWindow
+from database.database import user_get_tasks, update_status_url
+from database.requests import get_user_info
 from ui.windows import RegistrationWindow
 from cogs.admin_cmd import AdminTasksBtn
 from cogs.config import NOT_REGIST_ID, REGIST_ID, PRIORITY_COLORS
@@ -36,11 +36,16 @@ class CmdUsers(commands.Cog):
     @commands.has_role(REGIST_ID)
     async def editinfo(self, inter: disnake.ApplicationCommandInteraction):
         user_data = await get_user_info(inter.author.id)
-        # if user_data is None:
-        #     await inter.response.send_message("Ви не зареєстровані! Спочатку зареєструйтесь ", ephemeral=True)
-        #     return
-        # else: 
         await inter.response.send_modal(RegistrationWindow(is_edit=True, current_data=user_data, on_edit=self.on_edit))
+    
+
+    # comands - profile
+    @commands.slash_command(name="profile", description="переглянути профіль")
+    @commands.has_role(REGIST_ID)
+    async def profile(self, inter: disnake.ApplicationCommandInteraction):
+        user_data = await get_user_info(inter.author.id)
+        role_names = ", ".join(role.name for role in user_data.roles)
+        await inter.response.send_message(f"Username: {user_data.username} \n UserCard: {user_data.user_card} \n UserRoles: {role_names} \n UserBalance: {user_data.user_balance} \n UserXp: {user_data.user_xp} \n UserLevel: {user_data.user_level} \n UserRank: {user_data.user_rank} \n UserCountTask: {user_data.user_count_task}")
 
 
     # відсилає користувачу всі завдання які він взяв 
