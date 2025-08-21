@@ -1,14 +1,8 @@
 import disnake
-import os
 
-from disnake.ext import commands
 from disnake.ui import Select, View
-from disnake import TextInputStyle
-
-from dotenv import load_dotenv
-from database.database import get_user_info, edit_user_info
-from cogs.config import ROLES, REGIST_ID, NOT_REGIST_ID
-from ui.embeds import registration_confirm_embed 
+from ui.embeds import registration_confirm_embed
+from database.requests import get_user_info
 
 
 
@@ -33,21 +27,11 @@ class DropdownRoleMenu(Select):
             options=options,
         )
 
-
     async def callback(self, inter: disnake.MessageInteraction):
-        from cogs.buttons import ConfirmBtn
-        
+        from ui.buttons import ConfirmBtn
         await inter.response.defer()
         view = ConfirmBtn(self.username, self.bank_card, self.values, self.user_id)
         embed = registration_confirm_embed(self.username, self.bank_card, self.values)
-        # roles_text = ", ".join(self.values)
-        # embed = disnake.Embed(
-        #     title="Підтвердити інформацію?",
-        #     color=disnake.Color.blue()
-        # )
-        # embed.add_field(name="Ім'я", value=self.username, inline=False)
-        # embed.add_field(name="Картка", value=self.bank_card, inline=False)
-        # embed.add_field(name="Ролі", value=roles_text, inline=False)
         await inter.followup.send(embed=embed, view=view, ephemeral=True)
 
 

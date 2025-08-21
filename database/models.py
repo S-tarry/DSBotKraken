@@ -1,9 +1,9 @@
 import asyncio
 import os
 
-from sqlalchemy import BigInteger, Column, Integer, String, Text, Enum, Float, ForeignKey, DateTime, func
+from sqlalchemy import BigInteger, Column, Integer, String, Text, Enum, Float, ForeignKey, DateTime, func, Table
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-from sqlalchemy.ext.asyncio import AsyncAttrs, async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import AsyncSession, AsyncAttrs, async_sessionmaker, create_async_engine
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -11,7 +11,7 @@ load_dotenv()
 DBPASS = os.getenv('DBPASS')
 
 engine = create_async_engine(url=f"mysql+aiomysql://root:{DBPASS}@localhost:3306/DSBotRKKS")
-assync_session = async_sessionmaker(engine)
+assync_session = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
 
 
 
@@ -20,12 +20,15 @@ class Base(AsyncAttrs, DeclarativeBase):
 
 
 
+
+
+
 # таблиця з користувачами
 class User(Base):
     __tablename__ = 'users'
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    user_id: Mapped[int] = mapped_column(Integer, nullable=False)
+    user_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
     username: Mapped[str] = mapped_column(String(50), nullable=False)
     user_card: Mapped[str] = mapped_column(String(50), nullable=False)
     user_balance: Mapped[int] = mapped_column(Integer, default=0)
@@ -34,8 +37,8 @@ class User(Base):
     user_rank: Mapped[str] = mapped_column(String(50), default='None')
     user_count_task: Mapped[int] = mapped_column(Integer, default=0)
 
-    roles: Mapped[list['UserRole']] = relationship('UserRole', back_populates='user')
-    tasks: Mapped[list['UserTask']] = relationship('UserTask', back_populates='user')
+    roles: Mapped[list["Role"]] = relationship(secondary="user_roles", back_populates="users")
+    tasks: Mapped[list["Task"]] = relationship(secondary="user_tasks", back_populates="user_tasks")
 
 
 
@@ -44,10 +47,10 @@ class Role(Base):
     __tablename__ = 'roles'
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    role_id: Mapped[int] = mapped_column(Integer, nullable=False)
-    name: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
+    role_id: Mapped[int] = mapped_column(BigInteger)
+    name: Mapped[str] = mapped_column(String(50))
 
-    users: Mapped[list['UserRole']] = relationship('UserRole', back_populates='user')
+    users: Mapped[list["User"]] = relationship(secondary="user_roles", back_populates="roles")
 
 
 
@@ -55,11 +58,8 @@ class UserRole(Base):
     __tablename__ = 'user_roles'
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey('users.id'), nullable=False)
-    role_id: Mapped[int] = mapped_column(ForeignKey('roles.id'), nullable=False)
-
-    user: Mapped['User'] = relationship('User', back_populates='roles')
-    role: Mapped['Role'] = relationship('Role', back_populates='users')
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete="CASCADE"))
+    role_id: Mapped[int] = mapped_column(ForeignKey('roles.id', ondelete="CASCADE"))
 
 
 
@@ -68,26 +68,26 @@ class Task(Base):
     __tablename__ = 'tasks'
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    title: Mapped[str] = mapped_column(String(100), nullable=False)
-    description: Mapped[str] = mapped_column(Text, nullable=False)
+    title: Mapped[str] = mapped_column(String(100))
+    description: Mapped[str] = mapped_column(Text)
     status: Mapped[str] = mapped_column(Enum("Не розпочато", "Виконується", "Завершено", "Нове", "Оновлене", name="usertask_status_enum"), default="Не розпочато")
-    price: Mapped[int] = mapped_column(Integer, nullable=False)
-    xp: Mapped[int] = mapped_column(Integer, nullable=False)
-    task_priority: Mapped[str] = mapped_column(Enum("Low", "Medium", "High", name="task_priority_enum"), default="Low")
+    role: Mapped[str] = mapped_column(String)
+    price: Mapped[int] = mapped_column(Integer)
+    xp: Mapped[int] = mapped_column(Integer)
+    task_priority: Mapped[str] = mapped_column(Enum("Low", "Medium", "High", name="task_priority_enum"))
+
+    user_tasks: Mapped[list["User"]] = relationship(secondary="user_tasks", back_populates='tasks')
 
 
 
 class UserTask(Base):
-    __tablename__ = 'usertasks'
+    __tablename__ = 'user_tasks'
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey('users.id'), nullable=False)
-    task_id: Mapped[int] = mapped_column(ForeignKey('tasks.id'), nullable=False)
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete="CASCADE"))
+    task_id: Mapped[int] = mapped_column(ForeignKey('tasks.id', ondelete="CASCADE"))
     status: Mapped[str] = mapped_column(Enum("Не розпочато", "Виконується", "Завершено", "Нове", "Оновлене", name="usertask_status_enum"), default="Не розпочато")
-    task_link: Mapped[str] = mapped_column(String(150), nullable=True)
-    
-    user: Mapped['User'] = relationship('User', back_populates='tasks')
-    task: Mapped['Task'] = relationship('Task', back_populates='user_tasks')
+    task_link: Mapped[str] = mapped_column(String(150))
 
 
 

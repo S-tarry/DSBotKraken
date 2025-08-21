@@ -31,7 +31,7 @@ class RegistrationWindow(disnake.ui.Modal):
                     custom_id="username",
                     style=TextInputStyle.short,
                     min_length=2,
-                    max_length=50,
+                    # max_length=50,
                     required=False,
                 ),
                 disnake.ui.TextInput(
@@ -40,15 +40,7 @@ class RegistrationWindow(disnake.ui.Modal):
                     custom_id="bank_card",
                     style=TextInputStyle.short,                
                     min_length=16,
-                    max_length=20,
-                    required=False,
-                ),
-                disnake.ui.TextInput(
-                    label="Роль",
-                    placeholder="Вкажіть роль/ролі через кому",
-                    custom_id="role",
-                    style=TextInputStyle.short,                
-                    min_length=3,
+                    # max_length=20,
                     required=False,
                 ),
             ]
