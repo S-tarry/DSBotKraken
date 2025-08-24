@@ -8,7 +8,7 @@ from disnake.ext import commands
 from dotenv import load_dotenv
 # from database.database import get_user_info, edit_user_info
 from database.requests import get_user_info, edit_user_info
-from cogs.config import ROLES, REGIST_ID, NOT_REGIST_ID
+from config.config import ROLES, REGIST_ID, NOT_REGIST_ID
 from ui.windows import RegistrationWindow
 from ui.select_menu import DropdownRoleView
 from ui.embeds import registration_confirm_embed

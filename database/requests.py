@@ -1,9 +1,8 @@
-from sqlalchemy import select, update, delete
+from sqlalchemy import select, update, delete, insert
 from sqlalchemy.orm import selectinload
 
 from database.models import assync_session
-from database.models import User, Role, UserRole, Task
-
+from database.models import User, Role, Task, UserTask
 
 
 # add new user and roles into DB
@@ -12,9 +11,6 @@ async def add_new_user(user_id: int, username: str, user_card: str, roles: list)
         user = await session.scalar(select(User).where(User.user_id == user_id))
         role_result = await session.scalars(select(Role).where(Role.name.in_(roles)))
         db_roles = role_result.all()
-        if not db_roles:
-            print("Немає такої ролі в БД")
-            return
         if not user:
             user = User(user_id=user_id, username=username, user_card=user_card)
             session.add(user)
@@ -27,22 +23,18 @@ async def add_new_user(user_id: int, username: str, user_card: str, roles: list)
 # update user info
 async def edit_user_info(user_id: int, username: str, user_card: str, roles: list):
     async with assync_session() as session:
-        result = await session.execute(select(User).options(selectinload(User.roles)).where(User.user_id == user_id))
-        user = result.scalar_one_or_none()
-        if not user:
-            return False
-
-        user.username = username
-        user.user_card = user_card
+        user_data = (update(User).where(User.user_id==user_id).values(username=username, user_card=user_card))
+        await session.execute(user_data)
 
         if roles:
+            result = await session.execute(select(User).options(selectinload(User.roles)).where(User.user_id == user_id))  
+            user = result.scalar_one_or_none()
+
             role_result = await session.scalars(select(Role).where(Role.name.in_(roles)))
             user.roles = role_result.all()
-
         await session.commit()
-        return True
-        
 
+        
 # get user info with DB
 async def get_user_info(user_id: int):
     async with assync_session() as session:
@@ -52,12 +44,59 @@ async def get_user_info(user_id: int):
 
 
 #add tasks into DB
-async def add_tasks_into_db(title: str, description: str, status: str, price: int, xp: int, task_priority: str):
+async def add_tasks_into_db(title: str, description: str, status: str, task_priority: str, role: str,  price: int, xp: int):
     async with assync_session() as session:
-        new_task = Task(title=title, description=description, status=status, price=price, xp=xp, task_priority=task_priority)
-        session.add(new_task)
+        task_data = await session.execute(update(Task).where(Task.title==title).values(description=description, status=status, 
+                                                                task_priority=task_priority, role=role, price=price, xp=xp))
+        if task_data.rowcount == 0:
+            await session.execute(insert(Task).values(title=title, description=description, status=status,
+                                           task_priority=task_priority, role=role, price=price, xp=xp))
         await session.commit()
 
+
+# get all tasks with DB
+async def get_all_tasks():
+    async with assync_session() as session:
+        all_tasks = await session.scalars(select(Task))
+        return all_tasks.all()
+
+
+# add tasks for user
+async def add_user_tasks(user_id: int, task_id: int):
+    async with assync_session() as session:
+        user = await session.scalar(select(User).where(User.user_id==user_id))
+        if not user:
+            return False
+        result = await session.scalar(select(UserTask).where(UserTask.user_id==user.id).where(UserTask.task_id==task_id))
+        if result:
+            return False
+        user_task = UserTask(user_id=user.id, task_id=task_id)
+        session.add(user_task)
+        await session.commit()
+        return True
+
+
+# update user tasks status and url
+async def update_user_tasks(task_id, status: list, task_url: str):
+    async with assync_session() as session:
+        task = await session.scalar(select(UserTask).where(UserTask.task_id==task_id))
+        if not task:
+            return False
+        
+        task.status = status
+        if task_url:
+            task.task_link = task_url
+
+        await session.commit()
+        return True
+
+
+# get all user tasks for commands - mytasks
+async def get_all_user_tasks(user_id):
+    async with assync_session() as session:
+        result = await session.execute(select(User).options(selectinload(User.tasks)).where(User.user_id==user_id))
+        user = result.scalar_one_or_none()
+        return user.tasks
 
 
 # add all roles into DB

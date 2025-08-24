@@ -1,5 +1,5 @@
 import disnake
-from disnake.ext import commands
+from disnake.ext import commands, tasks
 
 
 intents = disnake.Intents.default()
@@ -10,6 +10,7 @@ class Main(commands.Cog):
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+    
 
 
     @commands.Cog.listener()

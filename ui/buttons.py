@@ -3,12 +3,14 @@ import disnake
 from disnake.ui import Button
 from database.database import add_user
 from cogs.registration import AssignRoles
-from database.requests import add_new_user, edit_user_info, get_user_info
+from database.requests import add_new_user, edit_user_info, get_user_info, add_user_tasks, update_user_tasks
 from disnake.ext import commands
 from disnake import TextInputStyle
-from database.database import update_status_url
-from ui.windows import RegistrationWindow
+# from database.database import update_status_url
+from database.requests import update_user_tasks
+from ui.windows import RegistrationWindow, AdditionalyInfoWindow
 from cogs.reward import Reward
+from cogs.tasks import GetTasks
 
 intents = disnake.Intents.default()
 intents.message_content = True
@@ -66,6 +68,41 @@ class MissBtn(disnake.ui.View):
 
 
 
+# buttons for user - take tasks
+class TaskButtons(disnake.ui.View):
+    def __init__(self, bot: commands.Bot, task_id, task_title):
+        self.bot = bot
+        self.task_id = task_id
+        self.task_title = task_title
+        super().__init__(timeout=None)
+
+
+    @disnake.ui.button(label="Прийняти", style=disnake.ButtonStyle.green, custom_id="confirm")
+    async def confirm(self, button: disnake.ui.Button, inter: disnake.MessageInteraction):
+        await inter.response.send_message(f"Ви взяли завдання - {self.task_title}")
+        get_tasks = GetTasks(self.bot)
+        await add_user_tasks(inter.author.id, self.task_id)
+        await update_user_tasks(self.task_id, "Виконується", "")
+        await get_tasks.update_task_info_in_excel(self.task_title, "Виконується", "")
+        
+        await inter.message.delete()
+
+
+# buttons how send message into admin
+class SendTasksBtn(disnake.ui.View):
+    def __init__(self, username, task_id, task_title, bot: commands.Bot):
+        self.bot = bot
+        self.username = username
+        self.task_id = task_id
+        self.task_title = task_title
+        super().__init__(timeout=None)
+        
+    @disnake.ui.button(label="Відправити на перевірку", style=disnake.ButtonStyle.green, custom_id="sendview")
+    async def sendview(self, button: disnake.ui.Button, inter: disnake.MessageInteraction):
+        await inter.response.send_modal(AdditionalyInfoWindow(self.task_id, self.task_title, self.username, self.bot))
+        await inter.message.delete()
+
+
 # admin btn for confirm or cancel tasks
 class ConfirmCancelTaskBtn(disnake.ui.View):
     def __init__(self, task_id, user_id, task_title, link_to_task, bot: commands.Bot):
@@ -80,9 +117,9 @@ class ConfirmCancelTaskBtn(disnake.ui.View):
 
     @disnake.ui.button(label="Підтвердити завдання", style=disnake.ButtonStyle.green, custom_id="confirmtasks")
     async def confirm_tasks(self, button: disnake.ui.Button, inter: disnake.MessageInteraction):
-        get_cog = self.bot.get_cog('GetTasks')
-        await get_cog.update_task_status_in_excel(self.task_title, "Завершено", self.link_to_task)
-        await update_status_url(self.task_id, "Завершено", self.link_to_task)
+        get_tasks = GetTasks(self.bot)
+        await get_tasks.update_task_info_in_excel(self.task_title, "Завершено", self.link_to_task)
+        await update_user_tasks(self.task_id, "Завершено", self.link_to_task)
         user = await self.bot.fetch_user(self.user_id)
         await Reward.reward_user(self.task_id, self.user_id)
         await user.send(f"Ваше завдання було підтверджене - {self.task_title}, бали нараховано")
