@@ -1,13 +1,10 @@
 import os
 import disnake
 
-from disnake.ext import commands
 from dotenv import load_dotenv
 
 load_dotenv()
 
-# intents = disnake.Intents.default()
-# intents.message_content = True
 
 BOT_TOKEN = os.getenv('TOKEN')
 SHEETS_ID = os.getenv('SHEETS')
@@ -17,8 +14,8 @@ NOT_REGIST_ID = int(os.getenv('NOT_REGIST_ID'))
 REGIST_ID = int(os.getenv('REGIST_ID'))
 
 CHANNEL = {
-    'програміст': int(os.getenv('DEVELOPERS')),
-    'дизайнер': int(os.getenv('ARTS')),
+    'Програміст': int(os.getenv('DEVELOPERS')),
+    'Дизайнер': int(os.getenv('ARTS')),
 }
 ROLES = {
     # 'не зареєстрований': int(os.getenv('NOTREGIST_ID')),
@@ -31,15 +28,3 @@ PRIORITY_COLORS = {
     "Medium": disnake.Color.orange(), 
     "High": disnake.Color.red()
 }
-
-
-
-# реєстрація користувача
-class Const(commands.Cog):
-    def __init__(self, bot: commands.Bot):
-        self.bot = bot
-
-
-
-def setup(bot: commands.Bot):
-    bot.add_cog(Const(bot))

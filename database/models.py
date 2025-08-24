@@ -1,15 +1,13 @@
-import asyncio
 import os
 
-from sqlalchemy import BigInteger, Column, Integer, String, Text, Enum, Float, ForeignKey, DateTime, func, Table
+from sqlalchemy import BigInteger, Integer, String, Text, Enum, ForeignKey
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy.ext.asyncio import AsyncSession, AsyncAttrs, async_sessionmaker, create_async_engine
+
 from dotenv import load_dotenv
 
 load_dotenv()
-
 DBPASS = os.getenv('DBPASS')
-
 engine = create_async_engine(url=f"mysql+aiomysql://root:{DBPASS}@localhost:3306/DSBotRKKS")
 assync_session = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
 
@@ -20,10 +18,7 @@ class Base(AsyncAttrs, DeclarativeBase):
 
 
 
-
-
-
-# таблиця з користувачами
+# user table
 class User(Base):
     __tablename__ = 'users'
 
@@ -42,7 +37,7 @@ class User(Base):
 
 
 
-# таблиця з ролями
+# role table
 class Role(Base):
     __tablename__ = 'roles'
 
@@ -54,6 +49,7 @@ class Role(Base):
 
 
 
+# user role table
 class UserRole(Base):
     __tablename__ = 'user_roles'
 
@@ -63,7 +59,7 @@ class UserRole(Base):
 
 
 
-# таблиця з завданнями
+# tasks table
 class Task(Base):
     __tablename__ = 'tasks'
 
@@ -71,15 +67,16 @@ class Task(Base):
     title: Mapped[str] = mapped_column(String(100))
     description: Mapped[str] = mapped_column(Text)
     status: Mapped[str] = mapped_column(Enum("Не розпочато", "Виконується", "Завершено", "Нове", "Оновлене", name="usertask_status_enum"), default="Не розпочато")
-    role: Mapped[str] = mapped_column(String)
+    task_priority: Mapped[str] = mapped_column(Enum("Low", "Medium", "High", name="task_priority_enum"))
+    role: Mapped[str] = mapped_column(String(50))
     price: Mapped[int] = mapped_column(Integer)
     xp: Mapped[int] = mapped_column(Integer)
-    task_priority: Mapped[str] = mapped_column(Enum("Low", "Medium", "High", name="task_priority_enum"))
 
     user_tasks: Mapped[list["User"]] = relationship(secondary="user_tasks", back_populates='tasks')
 
 
 
+# user tasks table
 class UserTask(Base):
     __tablename__ = 'user_tasks'
 
@@ -87,7 +84,7 @@ class UserTask(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete="CASCADE"))
     task_id: Mapped[int] = mapped_column(ForeignKey('tasks.id', ondelete="CASCADE"))
     status: Mapped[str] = mapped_column(Enum("Не розпочато", "Виконується", "Завершено", "Нове", "Оновлене", name="usertask_status_enum"), default="Не розпочато")
-    task_link: Mapped[str] = mapped_column(String(150))
+    task_link: Mapped[str] = mapped_column(String(200), default="link")
 
 
 
@@ -96,5 +93,3 @@ async def async_main():
         await conn.run_sync(Base.metadata.create_all)
     await engine.dispose()
 
-
-# asyncio.run(async_main())

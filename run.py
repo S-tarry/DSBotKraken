@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from disnake.ext import commands
 from database.database import init_db
 from database.models import async_main
-from cogs.config import BOT_TOKEN
+from config.config import BOT_TOKEN
 
 load_dotenv()
 bot = commands.Bot(command_prefix='.', help_command=None,
