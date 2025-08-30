@@ -10,6 +10,7 @@ from disnake import TextInputStyle
 from database.requests import update_user_tasks
 from ui.windows import RegistrationWindow, AdditionalyInfoWindow
 from cogs.reward import Reward
+from economy.reward import reward_user
 from cogs.tasks import GetTasks
 
 intents = disnake.Intents.default()
@@ -120,8 +121,8 @@ class ConfirmCancelTaskBtn(disnake.ui.View):
         get_tasks = GetTasks(self.bot)
         await get_tasks.update_task_info_in_excel(self.task_title, "Завершено", self.link_to_task)
         await update_user_tasks(self.task_id, "Завершено", self.link_to_task)
+        await reward_user(self.user_id, self.task_id, self.bot)
         user = await self.bot.fetch_user(self.user_id)
-        await Reward.reward_user(self.task_id, self.user_id)
         await user.send(f"Ваше завдання було підтверджене - {self.task_title}, бали нараховано")
 
 

@@ -1,17 +1,9 @@
 import disnake
-import os
-
 from disnake.ext import commands
-# from disnake.ui import Select, View
-# from disnake import TextInputStyle
-
 from dotenv import load_dotenv
-# from database.database import get_user_info, edit_user_info
-from database.requests import get_user_info, edit_user_info
+from database.requests import get_user_info
 from config.config import ROLES, REGIST_ID, NOT_REGIST_ID
-from ui.windows import RegistrationWindow
 from ui.select_menu import DropdownRoleView
-from ui.embeds import registration_confirm_embed
 from database.requests import add_all_roles_into_db
 
 intents = disnake.Intents.default()
