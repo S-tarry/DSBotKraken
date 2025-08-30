@@ -112,3 +112,12 @@ async def add_all_roles_into_db(guild_roles, roles_to_skip: list):
             if not existing_role:
                 session.add(Role(name=role.name.lower(), role_id=role.id))
         await session.commit()
+
+
+# clear tables - UserTask, Task.
+async def clear_tables():
+    async with assync_session() as session:
+        await session.execute(delete(Task))
+        await session.execute(delete(UserTask))
+
+        await session.commit()

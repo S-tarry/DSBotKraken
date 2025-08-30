@@ -1,20 +1,20 @@
 import disnake
 
 from disnake.ext import commands
-from disnake import TextInputStyle
-from database.database import update_status_url
-from ui.windows import RegistrationWindow
-from cogs.reward import Reward
-import gspread
-import os
+# from disnake import TextInputStyle
+# from database.database import update_status_url
+# from ui.windows import RegistrationWindow
+# from cogs.reward import Reward
+# import gspread
+# import os
 
-from google.oauth2.service_account import Credentials
+# from google.oauth2.service_account import Credentials
 from disnake import Permissions
 from disnake.ext import commands
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 
 # from database.database import add_tasks, get_all_tasks, user_tasks, update_status_url, update_all_tasks
-from database.requests import add_tasks_into_db, get_all_tasks
+from database.requests import add_tasks_into_db, get_all_tasks, clear_tables
 # from disnake import TextInputStyle
 from config.config import SHEETS_ID, ADMIN_ID, CHANNEL
 from ui.buttons import TaskButtons
@@ -34,6 +34,7 @@ class AdminCmd(commands.Cog):
         self.bot = bot
 
 
+    # commands for add task into DB
     @commands.slash_command(name="addtask", description="додає завдання", default_member_permissions=Permissions(manage_guild=True))
     @commands.has_role(ADMIN_ID)
     async def write_tasks_to_db(self, inter: disnake.ApplicationCommandInteraction):
@@ -48,6 +49,7 @@ class AdminCmd(commands.Cog):
         await inter.response.send_message(f"Завдання додано. \n Всього: {counter}")
 
 
+    # commands for send task into groups
     @commands.slash_command(name="sendtasks", description="надсилає завдання у всі групи", default_member_permissions=Permissions(manage_guild=True))
     @commands.has_role(ADMIN_ID)
     async def send_task(self, inter: disnake.ApplicationCommandInteraction):
@@ -66,6 +68,13 @@ class AdminCmd(commands.Cog):
             
             await channel.send(embed=embed, view=TaskButtons(self.bot, tasks.id, tasks.title))
 
+
+    # commands for cleat tables data with DB
+    @commands.slash_command(name="clear_tables", description="очищає таблиці", default_member_permissions=Permissions(manage_guild=True))
+    @commands.has_role(ADMIN_ID)
+    async def clear_all_tables(self, inter: disnake.ApplicationCommandInteraction):
+        await inter.response.send_message("Таблиці UserTask та Task - очищені")
+        await clear_tables()
 
 
         

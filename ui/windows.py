@@ -8,7 +8,7 @@ from disnake import TextInputStyle
 from dotenv import load_dotenv
 from database.database import get_user_info, edit_user_info
 from database.requests import update_user_tasks
-from config.config import ROLES, REGIST_ID, NOT_REGIST_ID
+from config.config import ROLES, REGIST_ID, NOT_REGIST_ID, ADMIN_CHANNEL
 from cogs.tasks import GetTasks
 # from ui.buttons import ConfirmCancelTaskBtn
 
@@ -120,7 +120,7 @@ class AdditionalyInfoWindow(disnake.ui.Modal):
         await update_user_tasks(self.task_id, "Не розпочато", link_to_task)
         await get_tasks.update_task_info_in_excel(self.task_title, "Виконується", link_to_task)
         
-        channel_id = 1403835386576375960
+        channel_id = ADMIN_CHANNEL
         channel = self.bot.get_channel(channel_id)
 
         await channel.send(f"Користувач - {inter.author.name}.\n Виконав завдання - {self.task_title}. \n Опис до завдання: {additionaly_description}", view=ConfirmCancelTaskBtn(self.task_id, inter.author.id, self.task_title, link_to_task, self.bot))

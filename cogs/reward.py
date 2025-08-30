@@ -3,7 +3,7 @@ import disnake
 from disnake.ext import commands
 from disnake import TextInputStyle
 from database.database import get_price_xp_tasks, get_user_info, update_user_info_xp_balance
-from cogs.registration import RegistrationWindow
+# from cogs.registration import RegistrationWindow
 
 
 
