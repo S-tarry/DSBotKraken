@@ -1,8 +1,10 @@
+import datetime
+
 from sqlalchemy import select, update, delete, insert
 from sqlalchemy.orm import selectinload
 
 from database.models import assync_session
-from database.models import User, Role, Task, UserTask
+from database.models import User, Role, Task, UserTask, Payout
 
 
 # add new user and roles into DB
@@ -20,18 +22,25 @@ async def add_new_user(user_id: int, username: str, user_card: str, roles: list)
         await session.commit()
 
 
-# update user info
+# edit user info
 async def edit_user_info(user_id: int, username: str, user_card: str, roles: list):
     async with assync_session() as session:
         user_data = (update(User).where(User.user_id==user_id).values(username=username, user_card=user_card))
         await session.execute(user_data)
-
         if roles:
             result = await session.execute(select(User).options(selectinload(User.roles)).where(User.user_id == user_id))  
             user = result.scalar_one_or_none()
 
             role_result = await session.scalars(select(Role).where(Role.name.in_(roles)))
             user.roles = role_result.all()
+        await session.commit()
+
+
+# update user info
+async def update_user_info(user_id: int):
+    async with assync_session() as session:
+        user = await session.scalar(select(User).where(User.user_id == user_id))
+        user.user_count_task += 1  
         await session.commit()
 
         
@@ -114,10 +123,34 @@ async def add_all_roles_into_db(guild_roles, roles_to_skip: list):
         await session.commit()
 
 
-# clear tables - UserTask, Task.
+# clear tables - UserTask, Task, Payout.
 async def clear_tables():
     async with assync_session() as session:
         await session.execute(delete(Task))
         await session.execute(delete(UserTask))
-
+        await session.execute(delete(Payout))
         await session.commit()
+
+
+# get all user how haves pay
+async def get_all_user_to_pay():
+    async with assync_session() as session:
+        user_to_pay = await session.scalars(select(User).where(User.user_balance > 0))
+        return user_to_pay
+
+
+# add transaction info
+async def add_payout_info(user_id, amount: int):
+    async with assync_session() as session:
+        user = await session.scalar(select(User).where(User.user_id == user_id))
+        payout = Payout(user_id=user.id, amount=amount)
+        session.add(payout)
+        user.user_balance = 0
+        await session.commit()
+
+
+# get transaction info
+async def get_payout_info():
+    async with assync_session() as session:
+        all_payout = await session.execute(select(Payout).options(selectinload(Payout.user)))
+        return all_payout.scalars().all()

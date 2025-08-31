@@ -3,11 +3,11 @@ import disnake
 from disnake.ui import Button
 from database.database import add_user
 from cogs.registration import AssignRoles
-from database.requests import add_new_user, edit_user_info, get_user_info, add_user_tasks, update_user_tasks
+from database.requests import add_new_user, edit_user_info, get_user_info, add_user_tasks, update_user_tasks, add_payout_info, update_user_info
 from disnake.ext import commands
 from disnake import TextInputStyle
 # from database.database import update_status_url
-from database.requests import update_user_tasks
+# from database.requests import update_user_tasks
 from ui.windows import RegistrationWindow, AdditionalyInfoWindow
 from cogs.reward import Reward
 from economy.reward import reward_user
@@ -85,11 +85,10 @@ class TaskButtons(disnake.ui.View):
         await add_user_tasks(inter.author.id, self.task_id)
         await update_user_tasks(self.task_id, "Виконується", "")
         await get_tasks.update_task_info_in_excel(self.task_title, "Виконується", "")
-        
         await inter.message.delete()
 
 
-# buttons how send message into admin
+# buttons how send messages into admin
 class SendTasksBtn(disnake.ui.View):
     def __init__(self, username, task_id, task_title, bot: commands.Bot):
         self.bot = bot
@@ -121,6 +120,7 @@ class ConfirmCancelTaskBtn(disnake.ui.View):
         get_tasks = GetTasks(self.bot)
         await get_tasks.update_task_info_in_excel(self.task_title, "Завершено", self.link_to_task)
         await update_user_tasks(self.task_id, "Завершено", self.link_to_task)
+        await update_user_info(self.user_id)
         await reward_user(self.user_id, self.task_id, self.bot)
         user = await self.bot.fetch_user(self.user_id)
         await user.send(f"Ваше завдання було підтверджене - {self.task_title}, бали нараховано")
@@ -130,3 +130,17 @@ class ConfirmCancelTaskBtn(disnake.ui.View):
     async def cancel_tasks(self, button: disnake.ui.Button, inter: disnake.MessageInteraction):
         user = await self.bot.fetch_user(self.user_id)
         await user.send(f"Ваше завдання було відхилене - {self.task_title} Причина: \n", )
+
+
+
+class PayButton(disnake.ui.View):
+    def __init__(self, user_id: int, amount: int):
+        super().__init__(timeout=None)
+        self.user_id = user_id
+        self.amount = amount
+
+
+    @disnake.ui.button(label="Виплатити", style=disnake.ButtonStyle.green, custom_id="pay")
+    async def pay_out(self, button: disnake.ui.Button, inter: disnake.MessageInteraction):
+        await add_payout_info(self.user_id, self.amount)
+        await inter.response.send_message("Виплата здійснена успішно")

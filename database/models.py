@@ -1,6 +1,7 @@
 import os
+import datetime
 
-from sqlalchemy import BigInteger, Integer, String, Text, Enum, ForeignKey
+from sqlalchemy import BigInteger, Integer, String, Text, Enum, ForeignKey, DateTime
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy.ext.asyncio import AsyncSession, AsyncAttrs, async_sessionmaker, create_async_engine
 
@@ -34,6 +35,7 @@ class User(Base):
 
     roles: Mapped[list["Role"]] = relationship(secondary="user_roles", back_populates="users")
     tasks: Mapped[list["Task"]] = relationship(secondary="user_tasks", back_populates="user_tasks")
+    payouts: Mapped[list["Payout"]] = relationship("Payout", back_populates="user")
 
 
 
@@ -72,7 +74,7 @@ class Task(Base):
     price: Mapped[int] = mapped_column(Integer)
     xp: Mapped[int] = mapped_column(Integer)
 
-    user_tasks: Mapped[list["User"]] = relationship(secondary="user_tasks", back_populates='tasks')
+    user_tasks: Mapped[list["User"]] = relationship(secondary="user_tasks", back_populates="tasks")
 
 
 
@@ -86,6 +88,17 @@ class UserTask(Base):
     status: Mapped[str] = mapped_column(Enum("Не розпочато", "Виконується", "Завершено", "Нове", "Оновлене", name="usertask_status_enum"), default="Не розпочато")
     task_link: Mapped[str] = mapped_column(String(200), default="link")
 
+
+
+class Payout(Base):
+    __tablename__ = 'payouts'
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete="CASCADE"))
+    amount: Mapped[int] = mapped_column(Integer)
+    payout_data: Mapped[DateTime] = mapped_column(DateTime, default=datetime.datetime.utcnow)
+
+    user: Mapped["User"] = relationship("User", back_populates="payouts")
 
 
 async def async_main():
