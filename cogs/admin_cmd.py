@@ -14,12 +14,13 @@ from disnake.ext import commands
 # from dotenv import load_dotenv
 
 # from database.database import add_tasks, get_all_tasks, user_tasks, update_status_url, update_all_tasks
-from database.requests import add_tasks_into_db, get_all_tasks, clear_tables
+from database.requests import add_tasks_into_db, get_all_tasks, clear_tables, get_payout_info, get_all_user_to_pay
+from services.excel_import import excel_pay_list
 # from disnake import TextInputStyle
 from config.config import SHEETS_ID, ADMIN_ID, CHANNEL
-from ui.buttons import TaskButtons
+from ui.buttons import TaskButtons, PayButton
 from cogs.tasks import GetTasks
-from ui.embeds import tasks_info_embed
+from ui.embeds import tasks_info_embed, pay_info_embed
 # from disnake.ui import Button
 
 
@@ -67,6 +68,42 @@ class AdminCmd(commands.Cog):
                 continue
             
             await channel.send(embed=embed, view=TaskButtons(self.bot, tasks.id, tasks.title))
+    
+
+
+    @commands.slash_command(name="user_pay", description="список користувачів які мають виплату", default_member_permissions=Permissions(manage_guild=True))
+    @commands.has_role(ADMIN_ID)
+    async def get_user_pay(self, inter: disnake.ApplicationCommandInteraction):
+        result = await get_all_user_to_pay()
+        for user_to_pay in result:
+            if user_to_pay:
+                embed = pay_info_embed(username=user_to_pay.username, bank_card=user_to_pay.user_card, 
+                                    amount=user_to_pay.user_balance, task_complated=user_to_pay.user_count_task)
+                await inter.send("Користувачі які не отримали виплати: ", embed=embed, view=PayButton(user_to_pay.user_id, 
+                                                                                                        amount=user_to_pay.user_balance))
+
+
+
+    @commands.slash_command(name="paylist", description="видає список виплат", default_member_permissions=Permissions(manage_guild=True))
+    @commands.has_role(ADMIN_ID)
+    async def get_pay_list(self, inter: disnake.ApplicationCommandInteraction):
+        file_bytes = await excel_pay_list()
+        file = disnake.File(file_bytes, filename="payouts.xlsx")
+        await inter.response.send_message("Список виплат", file=file)
+
+        # for payout in payout_data:
+        #     user = payout.user
+        #     embed = pay_info_embed(username=user.username, bank_card=user.user_card, amount=payout.amount, 
+        #                             task_complated=user.user_count_task)
+            
+        # await inter.response.send_message("Історія виплат: ", embed=embed, view=PayButton(user.user_id, 
+        #                 amount=user.user_balance), file=disnake.File(file_bytes, filename="payouts.xlsx"))
+        # await inter.send(embed=embed, view=PayButton(user.user_id, payout.amount))
+        
+        # get_payout_info()
+
+
+
 
 
     # commands for cleat tables data with DB
@@ -75,6 +112,7 @@ class AdminCmd(commands.Cog):
     async def clear_all_tables(self, inter: disnake.ApplicationCommandInteraction):
         await inter.response.send_message("Таблиці UserTask та Task - очищені")
         await clear_tables()
+    
 
 
         

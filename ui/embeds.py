@@ -36,5 +36,16 @@ def tasks_info_embed(id: int, title: str, description: str, status: str, task_pr
     embed.add_field(name="Досвід 🎓", value=xp, inline=True)
     return embed
 
+# embeds with pay user info
+def pay_info_embed(username: str, bank_card: int, amount: int, task_complated: int):
+    embed = disnake.Embed(
+        title=f"Виплата користувачу - {username}",
+        color=disnake.Color.blurple()
+    )
+    embed.add_field(name="Ім'я користувача", value=username, inline=True)
+    embed.add_field(name="Карта", value=bank_card, inline=False)
+    embed.add_field(name="Сума", value=amount, inline=True)
+    embed.add_field(name="Кількість виконаних завдань", value=task_complated, inline=True)
+    return embed
 
 

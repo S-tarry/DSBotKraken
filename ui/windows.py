@@ -112,12 +112,10 @@ class AdditionalyInfoWindow(disnake.ui.Modal):
         from ui.buttons import ConfirmCancelTaskBtn
         
         await inter.response.defer()
-        # get_cog = self.bot.get_cog('GetTasks')
         get_tasks = GetTasks(self.bot)
         link_to_task = inter.text_values["link"]
         additionaly_description = inter.text_values["additionaly"]
-        # await update_status_url(self.task_id, "Не розпочато", link_to_task)
-        await update_user_tasks(self.task_id, "Не розпочато", link_to_task)
+        await update_user_tasks(self.task_id, "Виконується", link_to_task)
         await get_tasks.update_task_info_in_excel(self.task_title, "Виконується", link_to_task)
         
         channel_id = ADMIN_CHANNEL
