@@ -1,10 +1,11 @@
 import disnake
-from disnake.ext import commands
+
 from dotenv import load_dotenv
-from database.requests import get_user_info
+from disnake.ext import commands
+from database.requests import get_user_info, add_all_roles_into_db
 from config.config import ROLES, REGIST_ID, NOT_REGIST_ID
 from ui.select_menu import DropdownRoleView
-from database.requests import add_all_roles_into_db
+
 
 intents = disnake.Intents.default()
 intents.message_content = True

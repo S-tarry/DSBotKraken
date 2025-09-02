@@ -1,16 +1,13 @@
 import disnake
-import os
 
 from disnake.ext import commands
-from disnake.ui import Select, View
 from disnake import TextInputStyle
 
 from dotenv import load_dotenv
-from database.database import get_user_info, edit_user_info
 from database.requests import update_user_tasks
-from config.config import ROLES, REGIST_ID, NOT_REGIST_ID, ADMIN_CHANNEL
+from config.config import ADMIN_CHANNEL
 from cogs.tasks import GetTasks
-# from ui.buttons import ConfirmCancelTaskBtn
+
 
 intents = disnake.Intents.default()
 intents.message_content = True

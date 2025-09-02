@@ -2,8 +2,6 @@ import disnake
 
 from disnake.ui import Select, View
 from ui.embeds import registration_confirm_embed
-from database.requests import get_user_info
-
 
 
 # dropdown list with role

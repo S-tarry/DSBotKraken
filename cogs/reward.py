@@ -1,10 +1,7 @@
 import disnake
 
 from disnake.ext import commands
-from disnake import TextInputStyle
 from database.database import get_price_xp_tasks, get_user_info, update_user_info_xp_balance
-# from cogs.registration import RegistrationWindow
-
 
 
 intents = disnake.Intents.default()
@@ -28,8 +25,8 @@ class Reward(commands.Cog):
         new_balance = current_balance + price
         new_xp = current_xp + xp
 
-
         await update_user_info_xp_balance(user_id, new_balance, new_xp)
+
 
 
 def setup(bot: commands.Bot):
