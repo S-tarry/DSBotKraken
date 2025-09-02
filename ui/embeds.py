@@ -1,16 +1,9 @@
 import disnake
-import os
 
-from disnake.ext import commands
-from disnake.ui import Select, View
-from disnake import TextInputStyle
-
-from dotenv import load_dotenv
-from database.database import get_user_info, edit_user_info
-from config.config import ROLES, REGIST_ID, NOT_REGIST_ID, PRIORITY_COLORS
+from config.config import PRIORITY_COLORS
 
 
-# embeds with user info
+# embeds with user info when user registration
 def registration_confirm_embed(username: str, bank_card: str, roles: list[str]):
     roles_text = ", ".join(roles)
     embed = disnake.Embed(
@@ -20,6 +13,23 @@ def registration_confirm_embed(username: str, bank_card: str, roles: list[str]):
     embed.add_field(name="Ім'я", value=username, inline=False)
     embed.add_field(name="Картка", value=bank_card, inline=False)
     embed.add_field(name="Ролі", value=roles_text, inline=False)
+    return embed
+
+# embeds with all user info
+def user_info_embed(username: str, bank_card: str, roles: list, user_balance: int, user_xp: int, user_level: int, user_rank: str, user_count: int):
+    role_names = ", ".join(role.name for role in roles)
+    embed = disnake.Embed(
+        title="🪪 ПРОФІЛЬ 🪪",
+        color=disnake.Color.gold()
+    )
+    embed.add_field(name="**👤 Ім'я**", value=f"> {username}", inline=True)
+    embed.add_field(name="**🎭 Ролі**", value=f"> {role_names}", inline=False)
+    embed.add_field(name="**💳 Картка**", value=f"||{bank_card}||", inline=True)
+    embed.add_field(name="**💸 Баланс**", value=f"> {user_balance}", inline=False)
+    embed.add_field(name="**🎓 Досвід**", value=f"> {user_xp}", inline=True)
+    embed.add_field(name="**📊 Рівень**", value=f"> {user_level}", inline=True)
+    embed.add_field(name="**🏅 Ранг**", value=f"> {user_rank}", inline=True)
+    embed.add_field(name="**🗃️ Загальна кількість виконаних завдань**", value=f"> {user_count}", inline=False)
     return embed
 
 # embeds with tasks info
@@ -47,5 +57,3 @@ def pay_info_embed(username: str, bank_card: int, amount: int, task_complated: i
     embed.add_field(name="Сума", value=amount, inline=True)
     embed.add_field(name="Кількість виконаних завдань", value=task_complated, inline=True)
     return embed
-
-

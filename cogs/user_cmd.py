@@ -2,17 +2,16 @@ import disnake
 
 from disnake.ext import commands
 
+from config.config import NOT_REGIST_ID, REGIST_ID
 from database.requests import get_user_info, get_all_user_tasks
 from ui.windows import RegistrationWindow
-from ui.embeds import tasks_info_embed
+from ui.embeds import tasks_info_embed, user_info_embed
 from ui.buttons import SendTasksBtn
-from config.config import NOT_REGIST_ID, REGIST_ID
 
 
 # -- user info --
 intents = disnake.Intents.default()
 intents.message_content = True
-# client = disnake.Client(intents=intents)
 
 
 
@@ -44,8 +43,9 @@ class CmdUsers(commands.Cog):
     @commands.has_role(REGIST_ID)
     async def profile(self, inter: disnake.ApplicationCommandInteraction):
         user_data = await get_user_info(inter.author.id)
-        role_names = ", ".join(role.name for role in user_data.roles)
-        await inter.response.send_message(f"Username: {user_data.username} \n UserCard: {user_data.user_card} \n UserRoles: {role_names} \n UserBalance: {user_data.user_balance} \n UserXp: {user_data.user_xp} \n UserLevel: {user_data.user_level} \n UserRank: {user_data.user_rank} \n UserCountTask: {user_data.user_count_task}")
+        embed = user_info_embed(user_data.username, user_data.user_card, user_data.roles, user_data.user_balance, 
+                                user_data.user_xp, user_data.user_level, user_data.user_rank, user_data.user_count_task)
+        await inter.response.send_message(embed=embed)
 
 
     # sends users tasks

@@ -1,10 +1,6 @@
 import os
 import disnake
 
-from dotenv import load_dotenv
-
-load_dotenv()
-
 
 BOT_TOKEN = os.getenv('TOKEN')
 SHEETS_ID = os.getenv('SHEETS')
@@ -21,7 +17,6 @@ CHANNEL = {
     'Дизайнер': int(os.getenv('ARTS')),
 }
 ROLES = {
-    # 'не зареєстрований': int(os.getenv('NOTREGIST_ID')),
     'програміст': int(os.getenv('PROGRAMMER_ID')),
     'дизайнер': int(os.getenv('DESIGNER_ID')),
     'тестувальник': int(os.getenv('TESTER_ID')),
