@@ -79,6 +79,7 @@ class RegistrationWindow(disnake.ui.Modal):
 
 
 
+# window for add info after user complated tasks
 class AdditionalyInfoWindow(disnake.ui.Modal):
     def __init__(self, task_id, task_title, username, bot: commands.Bot):
         self.bot = bot
@@ -105,6 +106,7 @@ class AdditionalyInfoWindow(disnake.ui.Modal):
         title = "Інформація до завдання"
         super().__init__(title=title, components=components)
     
+
     async def callback(self, inter: disnake.ModalInteraction):
         from ui.buttons import ConfirmCancelTaskBtn
         
@@ -120,3 +122,30 @@ class AdditionalyInfoWindow(disnake.ui.Modal):
 
         await channel.send(f"Користувач - {inter.author.name}.\n Виконав завдання - {self.task_title}. \n Опис до завдання: {additionaly_description}", view=ConfirmCancelTaskBtn(self.task_id, inter.author.id, self.task_title, link_to_task, self.bot))
         await inter.followup.send("Завдання надіслано на перевірку! Очікуйте відповідь.")
+
+
+
+# modal window when admin cancel task
+class ReasonCancelTasks(disnake.ui.Modal):
+    def __init__(self, bot, user_id, task_title):
+        self.bot = bot
+        self.user_id = user_id
+        self.task_title = task_title
+
+        components = [
+            disnake.ui.TextInput(
+                label="Причина відхилення",
+                placeholder="опис",
+                custom_id="reason_cancel",
+                style=TextInputStyle.short,
+                required=True
+            ),
+        ]
+        title = "Додаткова інформація"
+        super().__init__(title=title, components=components)
+    
+    async def callback(self, inter: disnake.ModalInteraction):
+        reason = inter.text_values["reason_cancel"]
+        user = await self.bot.fetch_user(self.user_id)
+        await user.send(f"Ваше завдання - **{self.task_title}** відхилене.\nПричина: {reason}")
+        await inter.response.send_message("Завдання відхилене і користувач повідомлений", ephemeral=True)
