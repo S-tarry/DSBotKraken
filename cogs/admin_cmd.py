@@ -94,9 +94,7 @@ class AdminCmd(commands.Cog):
             overwrites = channel.overwrites
             name = channel.name
             category = channel.category
-            
-            new_channel = await inter.guild.create_text_channel(name=name, overwrites=overwrites, category=category)
-
+            await inter.guild.create_text_channel(name=name, overwrites=overwrites, category=category)
             await channel.delete()
 
 

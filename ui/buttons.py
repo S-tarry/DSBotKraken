@@ -1,17 +1,13 @@
 import disnake
 
 from disnake.ui import Button
-from database.database import add_user
 from cogs.registration import AssignRoles
 from database.requests import add_new_user, edit_user_info, get_user_info, add_user_tasks, update_user_tasks, add_payout_info, update_user_info
 from disnake.ext import commands
-from disnake import TextInputStyle
-# from database.database import update_status_url
-# from database.requests import update_user_tasks
-from ui.windows import RegistrationWindow, AdditionalyInfoWindow
-from cogs.reward import Reward
+from ui.windows import AdditionalyInfoWindow, ReasonCancelTasks
 from economy.reward import reward_user
 from cogs.tasks import GetTasks
+
 
 intents = disnake.Intents.default()
 intents.message_content = True
@@ -128,8 +124,8 @@ class ConfirmCancelTaskBtn(disnake.ui.View):
 
     @disnake.ui.button(label="Відхилити завдання", style=disnake.ButtonStyle.red, custom_id="canceltasks")
     async def cancel_tasks(self, button: disnake.ui.Button, inter: disnake.MessageInteraction):
-        user = await self.bot.fetch_user(self.user_id)
-        await user.send(f"Ваше завдання було відхилене - {self.task_title} Причина: \n", )
+        modal = ReasonCancelTasks(self.bot, self.user_id, self.task_title)
+        await inter.response.send_modal(modal)
 
 
 
