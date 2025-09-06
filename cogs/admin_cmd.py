@@ -30,9 +30,11 @@ class AdminCmd(commands.Cog):
         gettasks: GetTasks = self.bot.get_cog("GetTasks")
         counter = 0
         await gettasks.load_tasks()
+
         for row in gettasks.values_list:
-            await add_tasks_into_db(row['Завдання'], row['Опис завдання'], row['Статус'], row['Пріоритет'], row['Роль'], row['Ціна'], row['Досвід'])
-            counter += 1
+            added = await add_tasks_into_db(row['Завдання'], row['Опис завдання'], row['Статус'], row['Пріоритет'], row['Роль'], row['Ціна'], row['Досвід'])
+            if added:
+                counter += 1
         
         await inter.response.send_message(f"Завдання додано. \n Всього: {counter}")
 
@@ -45,6 +47,8 @@ class AdminCmd(commands.Cog):
         tasks_data = await get_all_tasks()
         
         for tasks in tasks_data:
+            if tasks.status not in ["Нове", "Оновлене", "Не розпочато"]:
+                continue
             embed = tasks_info_embed(tasks.id, tasks.title, tasks.description, tasks.status, 
                                     tasks.task_priority, tasks.role, tasks.price, tasks.xp)
             channel_id = CHANNEL.get(tasks.role)
