@@ -53,6 +53,9 @@ async def get_user_info(user_id: int):
 
 #add tasks into DB
 async def add_tasks_into_db(title: str, description: str, status: str, task_priority: str, role: str,  price: int, xp: int):
+    allowed_status_task = ["Нове", "Не розпочато", "Оновлене"]
+    if status not in allowed_status_task:
+        return False
     async with assync_session() as session:
         task_data = await session.execute(update(Task).where(Task.title==title).values(description=description, status=status, 
                                                                 task_priority=task_priority, role=role, price=price, xp=xp))
