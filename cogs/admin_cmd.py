@@ -95,11 +95,13 @@ class AdminCmd(commands.Cog):
     async def clear_all_chats(self, inter: disnake.ApplicationCommandInteraction):
         await inter.response.send_message("Очищення чатів...")
         for channel in inter.guild.text_channels:
-            overwrites = channel.overwrites
-            name = channel.name
-            category = channel.category
-            await inter.guild.create_text_channel(name=name, overwrites=overwrites, category=category)
-            await channel.delete()
+            await channel.purge(limit=None)
+            await channel.send("Чат очищено")
+            # name = channel.name
+            # category = channel.category
+            # overwrites = channel.overwrites
+            # await inter.guild.create_text_channel(name=name, overwrites=overwrites, category=category)
+            # await channel.delete()
 
 
 

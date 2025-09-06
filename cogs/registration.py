@@ -3,7 +3,7 @@ import disnake
 from dotenv import load_dotenv
 from disnake.ext import commands
 from database.requests import get_user_info, add_all_roles_into_db
-from config.config import ROLES, REGIST_ID, NOT_REGIST_ID
+from config.config import ROLES, REGIST_ID, NOT_REGIST_ID, SERVER_ID
 from ui.select_menu import DropdownRoleView
 
 
@@ -21,11 +21,6 @@ class RegistrationUser(commands.Cog):
 
     # реєcтрація користувача
     async def handle_regist(self, inter: disnake.ModalInteraction):
-        guild = self.bot.get_guild(1394340735821811712)
-        roles_id_to_skip = [1404536880623521925, 1394344787435585660]
-        await add_all_roles_into_db(guild.roles, roles_id_to_skip)
-
-
         username = inter.text_values["username"].strip()
         bank_card = inter.text_values["bank_card"].strip()
         await inter.response.send_message("Виберіть роль: ", view=DropdownRoleView(username, bank_card, inter.author.id), ephemeral=True)
