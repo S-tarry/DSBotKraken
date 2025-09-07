@@ -1,14 +1,11 @@
-import os
 import datetime
 
 from sqlalchemy import BigInteger, Integer, String, Text, Enum, ForeignKey, DateTime
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy.ext.asyncio import AsyncSession, AsyncAttrs, async_sessionmaker, create_async_engine
 
-from dotenv import load_dotenv
+from config.config import DBPASS
 
-load_dotenv()
-DBPASS = os.getenv('DBPASS')
 engine = create_async_engine(url=f"mysql+aiomysql://root:{DBPASS}@localhost:3306/DSBotRKKS")
 assync_session = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
 
@@ -99,6 +96,7 @@ class Payout(Base):
     payout_data: Mapped[DateTime] = mapped_column(DateTime, default=datetime.datetime.utcnow)
 
     user: Mapped["User"] = relationship("User", back_populates="payouts")
+
 
 
 async def async_main():

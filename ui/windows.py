@@ -54,7 +54,7 @@ class RegistrationWindow(disnake.ui.Modal):
                     style=TextInputStyle.short,
                     min_length=2,
                     max_length=50,
-                    required=False,
+                    required=True,
                 ),
                 disnake.ui.TextInput(
                     label="Карта",
@@ -121,7 +121,7 @@ class AdditionalyInfoWindow(disnake.ui.Modal):
         channel = self.bot.get_channel(channel_id)
 
         await channel.send(f"Користувач - {inter.author.name}.\n Виконав завдання - {self.task_title}. \n Опис до завдання: {additionaly_description}", view=ConfirmCancelTaskBtn(self.task_id, inter.author.id, self.task_title, link_to_task, self.bot))
-        await inter.followup.send("Завдання надіслано на перевірку! Очікуйте відповідь.")
+        await inter.followup.send("Завдання надіслано на перевірку! Очікуйте відповідь.", ephemeral=True)
 
 
 

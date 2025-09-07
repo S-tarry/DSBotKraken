@@ -6,6 +6,7 @@ from database.models import assync_session
 from database.models import User, Role, Task, UserTask, Payout
 
 
+
 # add new user and roles into DB
 async def add_new_user(user_id: int, username: str, user_card: str, roles: list):
     async with assync_session() as session:
@@ -108,6 +109,13 @@ async def get_all_user_tasks(user_id):
         result = await session.execute(select(User).options(selectinload(User.tasks)).where(User.user_id==user_id))
         user = result.scalar_one_or_none()
         return user.tasks
+    
+
+async def delete_compated_user_tasks(task_id):
+    async with assync_session() as session:
+        compl_task = delete(UserTask).where(UserTask.task_id==task_id)
+        await session.execute(compl_task)
+        await session.commit()
 
 
 # add all roles into DB

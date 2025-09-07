@@ -1,0 +1,276 @@
+
+2025-09-07 00:26:07,363 | ERROR | Невідома помилка. Користувач: 'cryzmert'. Команда: 'paylist' | Command raised an exception: TypeError: send_error_or_info() missing 1 required positional argument: 'embed'
+NoneType: None
+
+2025-09-07 12:53:12,818 | ERROR | Невідома помилка. Користувач: 'cryzmert'. Команда: 'profile' | Command raised an exception: AttributeError: 'NoneType' object has no attribute 'username'
+NoneType: None
+
+2025-09-07 12:54:06,748 | WARNING | В користувача немає ролі. Користувач: 'cryzmert'. Команда: 'regist'
+2025-09-07 12:55:54,878 | WARNING | В користувача немає ролі. Користувач: 'cryzmert'. Команда: 'regist'
+2025-09-07 13:55:21,099 | WARNING | В користувача немає ролі. Користувач: 'cryzmert'. Команда: 'regist'
+2025-09-07 14:05:33,288 | WARNING | В користувача немає ролі. Користувач: 'cryzmert'. Команда: 'regist'
+2025-09-07 14:05:40,593 | WARNING | В користувача немає ролі. Користувач: 'cryzmert'. Команда: 'regist'
+2025-09-07 14:05:57,556 | WARNING | В користувача немає ролі. Користувач: 'cryzmert'. Команда: 'editinfo'
+2025-09-07 17:59:40,373 | ERROR | Помилка при додаванні всіх ролей в БД. (pymysql.err.ProgrammingError) (1146, "Table 'dsbotrkks.roles' doesn't exist")
+[SQL: SELECT roles.id, roles.role_id, roles.name 
+FROM roles 
+WHERE roles.role_id = %s]
+[parameters: (1394340735821811712,)]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+Traceback (most recent call last):
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\connectors\asyncio.py", line 192, in execute
+    self._adapt_connection._handle_exception(error)
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\connectors\asyncio.py", line 330, in _handle_exception
+    raise error.with_traceback(exc_info[2])
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\connectors\asyncio.py", line 190, in execute
+    return self.await_(self._execute_async(operation, parameters))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py", line 132, in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py", line 196, in greenlet_spawn
+    value = await result
+            ^^^^^^^^^^^^
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\connectors\asyncio.py", line 213, in _execute_async
+    result = await self._cursor.execute(operation, parameters)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\aiomysql\cursors.py", line 239, in execute
+    await self._query(query)
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\aiomysql\cursors.py", line 457, in _query
+    await conn.query(q)
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\aiomysql\connection.py", line 469, in query
+    await self._read_query_result(unbuffered=unbuffered)
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\aiomysql\connection.py", line 683, in _read_query_result
+    await result.read()
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\aiomysql\connection.py", line 1164, in read
+    first_packet = await self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\aiomysql\connection.py", line 652, in _read_packet
+    packet.raise_for_error()
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.ProgrammingError: (1146, "Table 'dsbotrkks.roles' doesn't exist")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\DSBotKraken\cogs\main.py", line 23, in on_ready
+    await add_all_roles_into_db(guild.roles, [ADMIN_ID, BOT_ID])
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\DSBotKraken\database\requests.py", line 128, in add_all_roles_into_db
+    result = await session.execute(select(Role).where(Role.role_id == role.id))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\ext\asyncio\session.py", line 463, in execute
+    result = await greenlet_spawn(
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py", line 201, in greenlet_spawn
+    result = context.throw(*sys.exc_info())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2365, in execute
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2251, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\orm\context.py", line 306, in orm_execute_statement
+    result = conn.execute(
+             ^^^^^^^^^^^^^
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\sql\elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\connectors\asyncio.py", line 192, in execute
+    self._adapt_connection._handle_exception(error)
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\connectors\asyncio.py", line 330, in _handle_exception
+    raise error.with_traceback(exc_info[2])
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\connectors\asyncio.py", line 190, in execute
+    return self.await_(self._execute_async(operation, parameters))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py", line 132, in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py", line 196, in greenlet_spawn
+    value = await result
+            ^^^^^^^^^^^^
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\connectors\asyncio.py", line 213, in _execute_async
+    result = await self._cursor.execute(operation, parameters)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\aiomysql\cursors.py", line 239, in execute
+    await self._query(query)
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\aiomysql\cursors.py", line 457, in _query
+    await conn.query(q)
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\aiomysql\connection.py", line 469, in query
+    await self._read_query_result(unbuffered=unbuffered)
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\aiomysql\connection.py", line 683, in _read_query_result
+    await result.read()
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\aiomysql\connection.py", line 1164, in read
+    first_packet = await self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\aiomysql\connection.py", line 652, in _read_packet
+    packet.raise_for_error()
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.ProgrammingError: (pymysql.err.ProgrammingError) (1146, "Table 'dsbotrkks.roles' doesn't exist")
+[SQL: SELECT roles.id, roles.role_id, roles.name 
+FROM roles 
+WHERE roles.role_id = %s]
+[parameters: (1394340735821811712,)]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+
+2025-09-07 18:09:25,469 | ERROR | Помилка при додаванні всіх ролей в БД. (pymysql.err.ProgrammingError) (1146, "Table 'dsbotrkks.roles' doesn't exist")
+[SQL: SELECT roles.id, roles.role_id, roles.name 
+FROM roles 
+WHERE roles.role_id = %s]
+[parameters: (1394340735821811712,)]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+Traceback (most recent call last):
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\connectors\asyncio.py", line 192, in execute
+    self._adapt_connection._handle_exception(error)
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\connectors\asyncio.py", line 330, in _handle_exception
+    raise error.with_traceback(exc_info[2])
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\connectors\asyncio.py", line 190, in execute
+    return self.await_(self._execute_async(operation, parameters))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py", line 132, in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py", line 196, in greenlet_spawn
+    value = await result
+            ^^^^^^^^^^^^
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\connectors\asyncio.py", line 213, in _execute_async
+    result = await self._cursor.execute(operation, parameters)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\aiomysql\cursors.py", line 239, in execute
+    await self._query(query)
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\aiomysql\cursors.py", line 457, in _query
+    await conn.query(q)
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\aiomysql\connection.py", line 469, in query
+    await self._read_query_result(unbuffered=unbuffered)
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\aiomysql\connection.py", line 683, in _read_query_result
+    await result.read()
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\aiomysql\connection.py", line 1164, in read
+    first_packet = await self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\aiomysql\connection.py", line 652, in _read_packet
+    packet.raise_for_error()
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.ProgrammingError: (1146, "Table 'dsbotrkks.roles' doesn't exist")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\DSBotKraken\cogs\main.py", line 23, in on_ready
+    await add_all_roles_into_db(guild.roles, [ADMIN_ID, BOT_ID])
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\DSBotKraken\database\requests.py", line 128, in add_all_roles_into_db
+    result = await session.execute(select(Role).where(Role.role_id == role.id))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\ext\asyncio\session.py", line 463, in execute
+    result = await greenlet_spawn(
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py", line 201, in greenlet_spawn
+    result = context.throw(*sys.exc_info())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2365, in execute
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2251, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\orm\context.py", line 306, in orm_execute_statement
+    result = conn.execute(
+             ^^^^^^^^^^^^^
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\sql\elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\connectors\asyncio.py", line 192, in execute
+    self._adapt_connection._handle_exception(error)
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\connectors\asyncio.py", line 330, in _handle_exception
+    raise error.with_traceback(exc_info[2])
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\connectors\asyncio.py", line 190, in execute
+    return self.await_(self._execute_async(operation, parameters))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py", line 132, in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py", line 196, in greenlet_spawn
+    value = await result
+            ^^^^^^^^^^^^
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\sqlalchemy\connectors\asyncio.py", line 213, in _execute_async
+    result = await self._cursor.execute(operation, parameters)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\aiomysql\cursors.py", line 239, in execute
+    await self._query(query)
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\aiomysql\cursors.py", line 457, in _query
+    await conn.query(q)
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\aiomysql\connection.py", line 469, in query
+    await self._read_query_result(unbuffered=unbuffered)
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\aiomysql\connection.py", line 683, in _read_query_result
+    await result.read()
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\aiomysql\connection.py", line 1164, in read
+    first_packet = await self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\aiomysql\connection.py", line 652, in _read_packet
+    packet.raise_for_error()
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\Програмування\Проекти\Боти\Оригінал\BotDS(KrakenGamers)\.venv\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.ProgrammingError: (pymysql.err.ProgrammingError) (1146, "Table 'dsbotrkks.roles' doesn't exist")
+[SQL: SELECT roles.id, roles.role_id, roles.name 
+FROM roles 
+WHERE roles.role_id = %s]
+[parameters: (1394340735821811712,)]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+
+2025-09-07 20:24:50,923 | WARNING | В користувача немає ролі. Користувач: 'cryzmert'. Команда: 'regist'
+2025-09-07 20:24:59,558 | WARNING | В користувача немає ролі. Користувач: 'cryzmert'. Команда: 'editinfo'
+2025-09-07 21:18:19,555 | ERROR | Невідома помилка. Користувач: 'cryzmert'. Команда: 'mytasks' | Command raised an exception: AttributeError: 'NoneType' object has no attribute 'tasks'
+NoneType: None
+
