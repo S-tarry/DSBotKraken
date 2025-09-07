@@ -1,17 +1,13 @@
 import disnake
 
 from disnake.ext import commands
+from disnake import Permissions
 
 from config.config import NOT_REGIST_ID, REGIST_ID
 from database.requests import get_user_info, get_all_user_tasks
 from ui.windows import RegistrationWindow
 from ui.embeds import tasks_info_embed, user_info_embed
 from ui.buttons import SendTasksBtn
-
-
-# -- user info --
-intents = disnake.Intents.default()
-intents.message_content = True
 
 
 
@@ -31,7 +27,7 @@ class CmdUsers(commands.Cog):
 
 
     # comands - edit info
-    @commands.slash_command(name="editinfo", description="редагувати свої дані")
+    @commands.slash_command(name="editinfo", description="редагувати свої дані", default_member_permissions=Permissions(view_channel=True))
     @commands.has_role(REGIST_ID)
     async def editinfo(self, inter: disnake.ApplicationCommandInteraction):
         user_data = await get_user_info(inter.author.id)
@@ -39,7 +35,7 @@ class CmdUsers(commands.Cog):
     
 
     # comands - profile
-    @commands.slash_command(name="profile", description="переглянути профіль")
+    @commands.slash_command(name="profile", description="переглянути свій профіль")
     @commands.has_role(REGIST_ID)
     async def profile(self, inter: disnake.ApplicationCommandInteraction):
         user_data = await get_user_info(inter.author.id)
@@ -54,13 +50,14 @@ class CmdUsers(commands.Cog):
     async def mytasks(self, inter: disnake.ApplicationCommandInteraction):
         tasks_info = await get_all_user_tasks(inter.author.id)
         if not tasks_info:
-            await inter.response.send_message("Ви  ще не маєте завдань")
+            await inter.response.send_message("Ви ще не маєте завдань.", ephemeral=True)
             return
         
-        await inter.response.send_message("Ваші завдання: ")
+        # await inter.response.send_message("Ваші завдання", ephemeral=True)
         for tasks in tasks_info:
             embed = tasks_info_embed(tasks.id, tasks.title, tasks.description, "Виконується", tasks.task_priority, tasks.role, tasks.price, tasks.xp)
-            await inter.send(embed=embed, view=SendTasksBtn(inter.author.name, tasks.id, tasks.title, self.bot))
+            await inter.send("Ваші завдання\n", embed=embed, view=SendTasksBtn(inter.author.name, tasks.id, tasks.title, self.bot), ephemeral=True)
+
 
 
 def setup(bot: commands.Bot):

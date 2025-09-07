@@ -35,15 +35,15 @@ def user_info_embed(username: str, bank_card: str, roles: list, user_balance: in
 # embeds with tasks info
 def tasks_info_embed(id: int, title: str, description: str, status: str, task_priority: str, role: str, price: int, xp: int ):
     embed = disnake.Embed(
-        title=f"{id}) {title} 🏷️",
+        title=f"{id}) 🏷️ {title}",
         description=f"{description}",
         color=PRIORITY_COLORS.get(task_priority, disnake.Color.greyple())
     )
-    embed.add_field(name="Статус ✅", value=status, inline=True)
-    embed.add_field(name="Пріоритет ⚡", value=task_priority, inline=True)
-    embed.add_field(name="Роль 👤", value=role, inline=False)
-    embed.add_field(name="Ціна 💰", value=price, inline=True)
-    embed.add_field(name="Досвід 🎓", value=xp, inline=True)
+    embed.add_field(name="✅ Статус", value=f"> {status}", inline=True)
+    embed.add_field(name="⚡ Пріоритет", value=f"> {task_priority}", inline=True)
+    embed.add_field(name="👤 Роль", value=f"> {role}", inline=False)
+    embed.add_field(name="💰 Ціна", value=f"> {price}", inline=True)
+    embed.add_field(name="🎓 Досвід", value=f"> {xp}", inline=True)
     return embed
 
 # embeds with pay user info

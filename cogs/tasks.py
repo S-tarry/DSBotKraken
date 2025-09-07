@@ -1,14 +1,11 @@
-import gspread
 import disnake
+import gspread
 
-from gspread import Cell
 from disnake.ext import commands
+from gspread import Cell
 from google.oauth2.service_account import Credentials
+
 from config.config import SHEETS_ID
-
-
-intents = disnake.Intents.default()
-intents.message_content = True
 
 
 

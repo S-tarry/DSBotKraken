@@ -31,12 +31,10 @@ class ConfirmBtn(disnake.ui.View):
             if result:
                 await edit_user_info(self.user_id, self.username, self.bank_card, self.roles)
                 await inter.response.send_message("Дані оновлено успішно!", ephemeral=True)
-                assigner = AssignRoles(inter.author, self.roles)
-                await assigner.assign_roles()
+                await AssignRoles(inter.author, self.roles).update_server_roles()
             else:
                 await add_new_user(self.user_id, self.username, self.bank_card, self.roles)    
-                assigner = AssignRoles(inter.author, self.roles)
-                await assigner.assign_roles()
+                await AssignRoles(inter.author, self.roles).update_server_roles()
                 await inter.response.send_message("Ви зареєстровані", ephemeral=True)
         except Exception as e:
             await inter.response.send_message(f"Помилка при реєстрації ☣ - {e}. Зв'яжіться з розробником або модератором сервера")
