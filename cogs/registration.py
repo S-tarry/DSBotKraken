@@ -1,22 +1,15 @@
 import disnake
-import os
 
-from dotenv import load_dotenv
 from disnake.ext import commands
-from disnake.ui import Button, Select, View
-from disnake import TextInputStyle
-from database.database import add_user, get_user_info
+from dotenv import load_dotenv
+
+from database.requests import get_user_info
+from config.config import ROLES, REGIST_ID, NOT_REGIST_ID
+from ui.select_menu import DropdownRoleView
 
 intents = disnake.Intents.default()
 intents.message_content = True
 load_dotenv()
-
-ROLES = {
-    'не зареєстрований': int(os.getenv('NOTREGIST_ID')),
-    'програміст': int(os.getenv('PROGRAMMER_ID')),
-    'дизайнер': int(os.getenv('DESIGNER_ID')),
-    'тестувальник': int(os.getenv('TESTER_ID')),
-}
 
 
 
@@ -24,137 +17,77 @@ ROLES = {
 class RegistrationUser(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-    
-    # команда - regist
-    @commands.slash_command(name="regist", description="Почати реєстрацію")
-    async def registration(self, inter: disnake.ApplicationCommandInteraction):
-        # тимчасове поки не з'явитьсяя перевірка на доступ до команд
-        # ------------------------------------------------------------
-        user_data = await get_user_info(inter.author.id)
-        if user_data is not None:
-            await inter.response.send_message("Ви вже зареєстровані")
-            return
-        # ------------------------------------------------------------
-        await inter.response.send_modal(RegistrationWindow())
 
 
-# вікно реєстрації
-class RegistrationWindow(disnake.ui.Modal):
-    def __init__(self):
-        components = [
-            disnake.ui.TextInput(
-                label="Ім'я",
-                placeholder="Введіть своє ім'я",
-                custom_id="username",
-                style=TextInputStyle.short,
-                min_length=2,
-                max_length=50,
-                required=True,
-            ),
-            disnake.ui.TextInput(
-                label="Карта",
-                placeholder="Введіть номер банківської картки",
-                custom_id="bank_card",
-                style=TextInputStyle.short,                
-                min_length=16,
-                max_length=20,
-                required=True,
-            ),
-        ]
-        super().__init__(title="Реєстрація", components=components)
-
-    async def callback(self, inter: disnake.ModalInteraction):
+    # реєcтрація користувача
+    async def handle_regist(self, inter: disnake.ModalInteraction):
         username = inter.text_values["username"].strip()
         bank_card = inter.text_values["bank_card"].strip()
         await inter.response.send_message("Виберіть роль: ", view=DropdownRoleView(username, bank_card, inter.author.id), ephemeral=True)
 
 
-# випадаючий список з ролями
-class DropdownRoleMenu(Select):
-    def __init__(self, username: str, bank_card: int, user_id: int):
-        self.username = username
-        self.bank_card = bank_card
-        self.user_id = user_id
+    # редагування даних користувача
+    async def handle_edit(self, inter: disnake.ModalInteraction):
+        from ui.buttons import MissBtn
 
-        options = [
-            disnake.SelectOption(label="програміст", description="написання коду", emoji="👨🏽‍💻"),
-            disnake.SelectOption(label="дизайнер", description="написання коду", emoji="👨🏽‍💻"),
-            disnake.SelectOption(label="тестувальник", description="написання коду", emoji="👨🏽‍💻"),
-            disnake.SelectOption(label="програміст3", description="написання коду", emoji="👨🏽‍💻"),
-            disnake.SelectOption(label="програміст4", description="написання коду", emoji="👨🏽‍💻"),
-        ]
-
-        super().__init__(
-            placeholder="Вибери роль/ролі",
-            min_values=1,
-            max_values=3,
-            options=options,
-        )
-
-    async def callback(self, inter: disnake.MessageInteraction):
-        await inter.response.defer()
-        view = ConfirmBtn(self.username, self.bank_card, self.values, self.user_id)
-        roles_text = ", ".join(self.values)
-        embed = disnake.Embed(
-            title="Підтвердити інформацію?",
-            color=disnake.Color.blue()
-        )
-        embed.add_field(name="Ім'я", value=self.username, inline=False)
-        embed.add_field(name="Картка", value=self.bank_card, inline=False)
-        embed.add_field(name="Ролі", value=roles_text, inline=False)
-        await inter.followup.send(embed=embed, view=view, ephemeral=True)
-
-
-# перегляд списку з ролями    
-class DropdownRoleView(View):
-    def __init__(self, username: str, bank_card: int, user_id: int):
-        super().__init__(timeout=300.0)
-        self.add_item(DropdownRoleMenu(username, bank_card, user_id))
+        user_data = await get_user_info(inter.author.id)
+        if not user_data:
+            await inter.response.send_message("Ви ще не зареєстровані", ephemeral=True)
+            return
     
+        current_username = user_data.username
+        current_role = [role.name for role in user_data.roles]
+        current_card = user_data.user_card
 
-# надає ролі користувачу --тимчасово--
+        new_username = inter.text_values["username"].strip() or current_username
+        new_bank_card = inter.text_values["bank_card"].strip() or current_card
+        new_role = inter.text_values.get("role", "").strip()
+
+        if new_role:
+            new_role = [r.strip() for r in new_role.split(",") if r.strip()]
+        else:
+            new_role = current_role
+
+        if set(new_role) != set(current_role):
+            await AssignRoles(inter.author, new_role).update_server_roles() 
+        
+        await inter.response.send_message("Оновіть свої ролі.", view=DropdownRoleView(new_username, new_bank_card, inter.author.id), ephemeral=True)
+        await inter.followup.send("Або пропустіть даний етап за допомогою кнопки.", view=MissBtn(new_username, new_bank_card, new_role, inter.author.id), ephemeral=True)
+
+
+
+# надає ролі користувачу --тимчасово, можливе переписання функці--
 class AssignRoles():
-    def __init__(self, member: disnake.Member, roles: list):
+    def __init__(self, member: disnake.Member, new_roles: list):
         self.member = member
-        self.roles = roles
+        self.new_roles = new_roles
 
-    async def assign_roles(self):
+
+    async def update_server_roles(self):
+        guild = self.member.guild
+
         roles_to_add = []
-        for role_name in self.roles:
-            role_id = ROLES.get(role_name.strip().lower())
-            if role_id:   
-                role = self.member.guild.get_role(role_id)
+        for name in self.new_roles:
+            role_id = ROLES.get(name.strip().lower())
+            if role_id:
+                role = guild.get_role(role_id)
                 if role:
                     roles_to_add.append(role)
+        
+        regist_role = guild.get_role(REGIST_ID)
+        roles_to_add.append(regist_role)
+
+        not_regist_role = guild.get_role(NOT_REGIST_ID)
+        if not_regist_role in self.member.roles:
+            await self.member.remove_roles(not_regist_role)
+        
+        roles_to_remove = [role for role in self.member.roles if role.id in ROLES.values()]
+        if roles_to_remove:
+            await self.member.remove_roles(*roles_to_remove)
+        
         if roles_to_add:
             await self.member.add_roles(*roles_to_add)
-            print("Roles add: ", roles_to_add)
 
-
-# кнопки підтвердження та відхилення 
-class ConfirmBtn(disnake.ui.View):
-    def __init__(self, username: str, bank_card: int, roles: list, user_id: int):
-        super().__init__(timeout=300.0)
-        self.username = username
-        self.bank_card = bank_card
-        self.roles = roles
-        self.user_id = user_id
-
-
-    @disnake.ui.button(label="Так", style=disnake.ButtonStyle.green, emoji="✅")
-    async def confirm(self, button: Button, inter: disnake.MessageInteraction):
-        try:
-            roles_str = ", ".join(self.roles)
-            await add_user(user_id=self.user_id, username=self.username, role=roles_str, bank_card=self.bank_card)
-            view = AssignRoles(inter.author, self.roles)
-            await view.assign_roles()
-            await inter.response.send_message("Ви зареєстровані")
-        except Exception as e:
-            await inter.response.send_message("Помилка при реєстрації")
-
-    @disnake.ui.button(label="Ні", style=disnake.ButtonStyle.red, emoji="❌")
-    async def cancel(self, button: Button, inter: disnake.CommandInteraction):
-        await inter.response.send_message("Реєстрація скаксована") 
 
 
 def setup(bot: commands.Bot):

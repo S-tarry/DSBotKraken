@@ -1,0 +1,59 @@
+import disnake
+
+from config.config import PRIORITY_COLORS
+
+
+# embeds with user info when user registration
+def registration_confirm_embed(username: str, bank_card: str, roles: list[str]):
+    roles_text = ", ".join(roles)
+    embed = disnake.Embed(
+        title="Підтвердити інформацію?",
+        color=disnake.Color.blue()
+    )
+    embed.add_field(name="Ім'я", value=username, inline=False)
+    embed.add_field(name="Картка", value=bank_card, inline=False)
+    embed.add_field(name="Ролі", value=roles_text, inline=False)
+    return embed
+
+# embeds with all user info
+def user_info_embed(username: str, bank_card: str, roles: list, user_balance: int, user_xp: int, user_level: int, user_rank: str, user_count: int):
+    role_names = ", ".join(role.name for role in roles)
+    embed = disnake.Embed(
+        title="🪪 ПРОФІЛЬ 🪪",
+        color=disnake.Color.gold()
+    )
+    embed.add_field(name="**👤 Ім'я**", value=f"> {username}", inline=True)
+    embed.add_field(name="**🎭 Ролі**", value=f"> {role_names}", inline=False)
+    embed.add_field(name="**💳 Картка**", value=f"||{bank_card}||", inline=True)
+    embed.add_field(name="**💸 Баланс**", value=f"> {user_balance}", inline=False)
+    embed.add_field(name="**🎓 Досвід**", value=f"> {user_xp}", inline=True)
+    embed.add_field(name="**📊 Рівень**", value=f"> {user_level}", inline=True)
+    embed.add_field(name="**🏅 Ранг**", value=f"> {user_rank}", inline=True)
+    embed.add_field(name="**🗃️ Загальна кількість виконаних завдань**", value=f"> {user_count}", inline=False)
+    return embed
+
+# embeds with tasks info
+def tasks_info_embed(id: int, title: str, description: str, status: str, task_priority: str, role: str, price: int, xp: int ):
+    embed = disnake.Embed(
+        title=f"{id}) 🏷️ {title}",
+        description=f"{description}",
+        color=PRIORITY_COLORS.get(task_priority, disnake.Color.greyple())
+    )
+    embed.add_field(name="✅ Статус", value=f"> {status}", inline=True)
+    embed.add_field(name="⚡ Пріоритет", value=f"> {task_priority}", inline=True)
+    embed.add_field(name="👤 Роль", value=f"> {role}", inline=False)
+    embed.add_field(name="💰 Ціна", value=f"> {price}", inline=True)
+    embed.add_field(name="🎓 Досвід", value=f"> {xp}", inline=True)
+    return embed
+
+# embeds with pay user info
+def pay_info_embed(username: str, bank_card: int, amount: int, task_complated: int):
+    embed = disnake.Embed(
+        title=f"Виплата користувачу - {username}",
+        color=disnake.Color.blurple()
+    )
+    embed.add_field(name="Ім'я користувача", value=username, inline=True)
+    embed.add_field(name="Карта", value=bank_card, inline=False)
+    embed.add_field(name="Сума", value=amount, inline=True)
+    embed.add_field(name="Кількість виконаних завдань", value=task_complated, inline=True)
+    return embed

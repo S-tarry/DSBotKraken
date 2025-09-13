@@ -1,43 +1,63 @@
 import disnake
+
 from disnake.ext import commands
+from disnake import Permissions
 
-# from database.database import init_db
+from config.config import NOT_REGIST_ID, REGIST_ID
+from database.requests import get_user_info, get_all_user_tasks
+from ui.windows import RegistrationWindow
+from ui.embeds import tasks_info_embed, user_info_embed
+from ui.buttons import SendTasksBtn
 
-# -- user info --
-# intents = disnake.Intents.default()
-# intents.message_content = True
-# client = disnake.Client(intents=intents)
 
 
 class CmdUsers(commands.Cog):
-
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        self.regist = self.bot.get_cog("RegistrationUser")
+        self.on_regist = self.regist.handle_regist
+        self.on_edit = self.regist.handle_edit
 
-    # перший запуск бота
-    # @commands.Cog.listener()
-    # async def on_ready(self):
-    #     await init_db()
-    #     print("Привіт, я бот - KrakenGAmmers")
 
-    # просто тест
-    # @commands.slash_command(name='register', description='реєструє користувача')
-    # async def profile(self, inter: disnake.ApplicationCommandInteraction):
-    #     await inter.response.send_message("Hello. You using COGS")
+    # comands - regist
+    @commands.slash_command(name="regist", description="зареєструватись")
+    @commands.has_role(NOT_REGIST_ID)
+    async def registration(self, inter: disnake.ApplicationCommandInteraction):
+        await inter.response.send_modal(RegistrationWindow(is_edit=False, on_regist=self.on_regist))
 
-    # інформація про користувача
-    @commands.slash_command(name='myinfo', description='sdcl,s')
-    async def my_info(self, inter: disnake.ApplicationCommandInteraction):
-        embed = disnake.Embed(
-            title="Panel info ",
-            color=disnake.Colour.yellow(),
-        )
-        embed.set_author(
-            name=f"Your nickname: {inter.author.name}",
-        )
-        embed.add_field(name="Your money", value="122", inline=False)
-        # await inter.response.send_message(embed=embed)
-        await inter.send(embed=embed)
+
+    # comands - edit info
+    @commands.slash_command(name="editinfo", description="редагувати свої дані", default_member_permissions=Permissions(view_channel=True))
+    @commands.has_role(REGIST_ID)
+    async def editinfo(self, inter: disnake.ApplicationCommandInteraction):
+        user_data = await get_user_info(inter.author.id)
+        await inter.response.send_modal(RegistrationWindow(is_edit=True, current_data=user_data, on_edit=self.on_edit))
+    
+
+    # comands - profile
+    @commands.slash_command(name="profile", description="переглянути свій профіль")
+    @commands.has_role(REGIST_ID)
+    async def profile(self, inter: disnake.ApplicationCommandInteraction):
+        user_data = await get_user_info(inter.author.id)
+        embed = user_info_embed(user_data.username, user_data.user_card, user_data.roles, user_data.user_balance, 
+                                user_data.user_xp, user_data.user_level, user_data.user_rank, user_data.user_count_task)
+        await inter.response.send_message(embed=embed, ephemeral=True)
+
+
+    # sends users tasks
+    @commands.slash_command(name="mytasks", description="переглянути взяті завдання")
+    @commands.has_role(REGIST_ID)
+    async def mytasks(self, inter: disnake.ApplicationCommandInteraction):
+        tasks_info = await get_all_user_tasks(inter.author.id)
+        if not tasks_info:
+            await inter.response.send_message("Ви ще не маєте завдань.", ephemeral=True)
+            return
+        
+        await inter.response.send_message("Ваші завдання", ephemeral=True)
+        for tasks in tasks_info:
+            embed = tasks_info_embed(tasks.id, tasks.title, tasks.description, "Виконується", tasks.task_priority, tasks.role, tasks.price, tasks.xp)
+            await inter.send(embed=embed, view=SendTasksBtn(inter.author.name, tasks.id, tasks.title, self.bot), ephemeral=True)
+
 
 
 def setup(bot: commands.Bot):
