@@ -41,7 +41,7 @@ class CmdUsers(commands.Cog):
         user_data = await get_user_info(inter.author.id)
         embed = user_info_embed(user_data.username, user_data.user_card, user_data.roles, user_data.user_balance, 
                                 user_data.user_xp, user_data.user_level, user_data.user_rank, user_data.user_count_task)
-        await inter.response.send_message(embed=embed)
+        await inter.response.send_message(embed=embed, ephemeral=True)
 
 
     # sends users tasks
@@ -53,10 +53,10 @@ class CmdUsers(commands.Cog):
             await inter.response.send_message("Ви ще не маєте завдань.", ephemeral=True)
             return
         
-        # await inter.response.send_message("Ваші завдання", ephemeral=True)
+        await inter.response.send_message("Ваші завдання", ephemeral=True)
         for tasks in tasks_info:
             embed = tasks_info_embed(tasks.id, tasks.title, tasks.description, "Виконується", tasks.task_priority, tasks.role, tasks.price, tasks.xp)
-            await inter.send("Ваші завдання\n", embed=embed, view=SendTasksBtn(inter.author.name, tasks.id, tasks.title, self.bot), ephemeral=True)
+            await inter.send(embed=embed, view=SendTasksBtn(inter.author.name, tasks.id, tasks.title, self.bot), ephemeral=True)
 
 
 

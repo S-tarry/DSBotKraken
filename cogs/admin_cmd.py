@@ -111,7 +111,7 @@ class AdminCmd(commands.Cog):
         for channel in inter.guild.text_channels:
             try:
                 await channel.purge(limit=None)
-                await channel.send("Чат очищено")
+                await channel.send("Чат очищено", delete_after=3)
             except Exception as e:
                 await send_error_or_info(self.bot, "Виникла помилка при очищенні чатів.", ERROR_CHANNEL)
                 logger.error(f"Помилка при очищенні чатів. {e}\n{traceback.format_exc()}")

@@ -28,7 +28,8 @@ CHANNEL = {
 }
 
 RANGS = {
-    'новачок': int(os.getenv('NEWBIE'))
+    'новачок': int(os.getenv('NEWBIE')),
+    'учень': int(os.getenv('STUDENT'))
 }
 
 ROLES = {

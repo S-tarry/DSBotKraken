@@ -120,8 +120,9 @@ class AdditionalyInfoWindow(disnake.ui.Modal):
         channel_id = ADMIN_CHANNEL
         channel = self.bot.get_channel(channel_id)
 
-        await channel.send(f"Користувач - {inter.author.name}.\n Виконав завдання - {self.task_title}. \n Опис до завдання: {additionaly_description}", view=ConfirmCancelTaskBtn(self.task_id, inter.author.id, self.task_title, link_to_task, self.bot))
-        await inter.followup.send("Завдання надіслано на перевірку! Очікуйте відповідь.", ephemeral=True)
+        await channel.send(f"Користувач - {inter.author.name}.\nВиконав завдання - {self.task_title}. \nОпис до завдання: {additionaly_description}", view=ConfirmCancelTaskBtn(self.task_id, inter.author.id, self.task_title, link_to_task, self.bot))
+        # await inter.followup.send("Завдання надіслано на перевірку! Очікуйте відповідь.", ephemeral=True)
+        await inter.send("Завдання надіслано на перевірку! Очікуйте відповідь.", ephemeral=True)
 
 
 
