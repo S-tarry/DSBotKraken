@@ -1,3 +1,5 @@
+import pstats
+
 # import time
 # import functools
 
@@ -11,3 +13,5 @@
 #         print(f"Функція {func.__name__} виконана за {end - start:.4f} секунд")
 #         return result
 #     return wrapper
+p = pstats.Stats('profile.out')
+p.sort_stats('cumulative').print_stats(10)

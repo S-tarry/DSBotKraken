@@ -8,7 +8,7 @@ from database.models import async_main
 from config.config import BOT_TOKEN
 from utils.error_handler import on_slash_command_error, on_command_error
 
-bot = commands.Bot(command_prefix='+', help_command=None, intents=disnake.Intents.all())
+bot = commands.Bot(command_prefix='+', help_command=None, reload=True, intents=disnake.Intents.all())
 bot.on_slash_command_error = on_slash_command_error
 bot.on_command_error = on_command_error
 

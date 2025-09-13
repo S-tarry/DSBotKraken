@@ -1,5 +1,5 @@
-import disnake
 import gspread
+import gspread_asyncio
 
 from disnake.ext import commands
 from gspread import Cell
@@ -31,16 +31,21 @@ class GetTasks(commands.Cog):
 
     # update data in excel
     async def update_task_info_in_excel(self, task_title, status, result_url):
-        records = self.worksheet.get_all_records()
-        
-        for idx, record in enumerate(records, start=2):
-            if record['Завдання'] == task_title:
-                cell_to_update = [
-                    Cell(idx, 3, status),
-                    Cell(idx, 8, result_url)
-                ]
-                self.worksheet.update_cells(cell_to_update)
-                break
+        # records = self.worksheet.get_all_records()
+        cell = self.worksheet.find(task_title, in_column=1)
+        if cell:
+            self.worksheet.update_cells([
+                Cell(cell.row, 3, status),
+                Cell(cell.row, 8, result_url)
+            ])
+        # for idx, record in enumerate(records, start=2):
+        #     if record['Завдання'] == task_title:
+        #         cell_to_update = [
+        #             Cell(idx, 3, status),
+        #             Cell(idx, 8, result_url)
+        #         ]
+        #         self.worksheet.update_cells(cell_to_update)
+        #         break
     
 
 

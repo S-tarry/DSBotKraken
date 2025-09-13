@@ -13,10 +13,13 @@ class DropdownRoleMenu(Select):
 
         options = [
             disnake.SelectOption(label="програміст", description="написання коду", emoji="👨🏽‍💻"),
-            disnake.SelectOption(label="дизайнер", description="написання коду", emoji="👨🏽‍💻"),
-            disnake.SelectOption(label="тестувальник", description="написання коду", emoji="👨🏽‍💻"),
-            disnake.SelectOption(label="програміст3", description="написання коду", emoji="👨🏽‍💻"),
-            disnake.SelectOption(label="програміст4", description="написання коду", emoji="👨🏽‍💻"),
+            disnake.SelectOption(label="дизайнер", description="UI/UX дизайн", emoji="🎨"),
+            disnake.SelectOption(label="художник", description="", emoji="🖌"),
+            disnake.SelectOption(label="аніматор", description="", emoji="🎬"),
+            disnake.SelectOption(label="звукорежисер", description="", emoji="🎧"),
+            disnake.SelectOption(label="сценаристи", description="", emoji="✍️"),
+            disnake.SelectOption(label="перекладачі", description="", emoji="🌍"),
+            disnake.SelectOption(label="тестувальники", description="", emoji="🧪"),
         ]
         super().__init__(
             placeholder="Вибери роль/ролі",
