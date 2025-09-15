@@ -4,6 +4,7 @@ from sqlalchemy.orm import selectinload
 
 from database.models import assync_session
 from database.models import User, Role, Task, UserTask, Payout
+from utils.clean_text import clean_role_name
 
 
 
@@ -129,7 +130,8 @@ async def add_all_roles_into_db(guild_roles, roles_to_skip: list):
             existing_role = result.scalar_one_or_none()
 
             if not existing_role:
-                session.add(Role(name=role.name.lower(), role_id=role.id))
+                clean_name = clean_role_name(role.name)
+                session.add(Role(name=clean_name, role_id=role.id))
         await session.commit()
 
 
