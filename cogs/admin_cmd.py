@@ -104,17 +104,11 @@ class AdminCmd(commands.Cog):
 
     
     # clear all chats message
-    @commands.slash_command(name="chats_clear", description="очищає всі чати", default_member_permissions=Permissions(manage_guild=True))
+    @commands.slash_command(name="chats_clear", description="очищає обрані чати", default_member_permissions=Permissions(manage_guild=True))
     @commands.has_role(ADMIN_ID)
-    async def clear_all_chats(self, inter: disnake.ApplicationCommandInteraction):
-        await send_error_or_info(self.bot, "Чати очищенні", INFORM_ADMIN_CHANNEL)
-        for channel in inter.guild.text_channels:
-            try:
-                await channel.purge(limit=None)
-                await channel.send("Чат очищено", delete_after=3)
-            except Exception as e:
-                await send_error_or_info(self.bot, "Виникла помилка при очищенні чатів.", ERROR_CHANNEL)
-                logger.error(f"Помилка при очищенні чатів. {e}\n{traceback.format_exc()}")
+    async def clear_all_chats(self, inter: disnake.ApplicationCommandInteraction, channel: disnake.TextChannel):
+        await channel.purge(limit=None)
+        await inter.send("Чат очищено", ephemeral=True)
 
 
 

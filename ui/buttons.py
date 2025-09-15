@@ -37,7 +37,8 @@ class ConfirmBtn(disnake.ui.View):
                 await AssignRoles(inter.author, self.roles).update_server_roles()
                 await inter.response.send_message("Ви зареєстровані", ephemeral=True)
         except Exception as e:
-            await inter.response.send_message(f"Помилка при реєстрації ☣ - {e}. Зв'яжіться з розробником або модератором сервера")
+            print(f"Помилка при реєстрації ☣ - {e}. Зв'яжіться з розробником або модератором сервера")
+            await inter.send(f"Помилка при реєстрації ☣ - {e}. Зв'яжіться з розробником або модератором сервера", ephemeral=True)
 
 
     @disnake.ui.button(label="Ні", style=disnake.ButtonStyle.grey, emoji="❌")
@@ -74,12 +75,12 @@ class TaskButtons(disnake.ui.View):
 
     @disnake.ui.button(label="Прийняти", style=disnake.ButtonStyle.green, custom_id="confirm")
     async def confirm(self, button: disnake.ui.Button, inter: disnake.MessageInteraction):
-        await inter.response.send_message(f"Ви взяли завдання - {self.task_title}")
-        get_tasks = GetTasks(self.bot)
+        await inter.response.send_message(f"Завдання - {self.task_title}, було взяте.")
+        await inter.message.delete()
         await add_user_tasks(inter.author.id, self.task_id)
         await update_user_tasks(self.task_id, "Виконується", "")
+        get_tasks = GetTasks(self.bot)
         await get_tasks.update_task_info_in_excel(self.task_title, "Виконується", "")
-        await inter.message.delete()
 
 
 # buttons how send messages into admin
